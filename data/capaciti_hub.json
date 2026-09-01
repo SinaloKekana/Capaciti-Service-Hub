@@ -1,0 +1,1627 @@
+{
+  "users": [
+    {
+      "id": "user-global-admin",
+      "name": "Global Administrator",
+      "email": "admin@capaciti.org",
+      "passwordHash": "5dc923b3302be3618413254b62c292713f5b9a7a48814bb6eda50404929f486df0b48e8c3a80dce5ac5053b4debc5a0ef4a784eec2a87f0325bd1ca6a65b35cb",
+      "role": "ADMIN",
+      "jobTitle": "Global System Administrator & COO",
+      "department": "Operations",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:00:00.000Z",
+      "updatedAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "user-opsai-admin",
+      "name": "Global Administrator (Alias)",
+      "email": "admin@opsai.com",
+      "passwordHash": "5dc923b3302be3618413254b62c292713f5b9a7a48814bb6eda50404929f486df0b48e8c3a80dce5ac5053b4debc5a0ef4a784eec2a87f0325bd1ca6a65b35cb",
+      "role": "ADMIN",
+      "jobTitle": "Global System Administrator & COO",
+      "department": "Operations",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:00:00.000Z",
+      "updatedAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "user-mgr-hr",
+      "name": "Nomsa Mthembu",
+      "email": "hr.manager@capaciti.org",
+      "passwordHash": "6e7863e6698563e369f7c8dc47fcc9d60a0791ae58dcc1e3ccabf812577d925dda8516706c53bea25c8cbbc578f2fd1583e1355c017fb3937f6ff71ddf37d99a",
+      "role": "HR_MANAGER",
+      "jobTitle": "HR Director / Head of People Operations",
+      "department": "Human Resources",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:15:00.000Z",
+      "updatedAt": "2026-08-01T08:15:00.000Z"
+    },
+    {
+      "id": "user-mgr-finance",
+      "name": "Sipho Ndlovu",
+      "email": "finance.manager@capaciti.org",
+      "passwordHash": "6e7863e6698563e369f7c8dc47fcc9d60a0791ae58dcc1e3ccabf812577d925dda8516706c53bea25c8cbbc578f2fd1583e1355c017fb3937f6ff71ddf37d99a",
+      "role": "FINANCE_MANAGER",
+      "jobTitle": "Chief Financial Officer / Finance Controller",
+      "department": "Finance",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:20:00.000Z",
+      "updatedAt": "2026-08-01T08:20:00.000Z"
+    },
+    {
+      "id": "user-mgr-it",
+      "name": "Thabo Khumalo",
+      "email": "it.director@capaciti.org",
+      "passwordHash": "6e7863e6698563e369f7c8dc47fcc9d60a0791ae58dcc1e3ccabf812577d925dda8516706c53bea25c8cbbc578f2fd1583e1355c017fb3937f6ff71ddf37d99a",
+      "role": "IT_MANAGER",
+      "jobTitle": "IT Director & Systems Architect",
+      "department": "IT Operations",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:25:00.000Z",
+      "updatedAt": "2026-08-01T08:25:00.000Z"
+    },
+    {
+      "id": "user-mgr-facilities",
+      "name": "Lerato Sithole",
+      "email": "facilities.manager@capaciti.org",
+      "passwordHash": "6e7863e6698563e369f7c8dc47fcc9d60a0791ae58dcc1e3ccabf812577d925dda8516706c53bea25c8cbbc578f2fd1583e1355c017fb3937f6ff71ddf37d99a",
+      "role": "FACILITIES_MANAGER",
+      "jobTitle": "Head of Facilities & Workplace Operations",
+      "department": "Facilities",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:28:00.000Z",
+      "updatedAt": "2026-08-01T08:28:00.000Z"
+    },
+    {
+      "id": "user-manager-naledi",
+      "name": "Naledi Khumalo",
+      "email": "manager@capaciti.org",
+      "passwordHash": "6e7863e6698563e369f7c8dc47fcc9d60a0791ae58dcc1e3ccabf812577d925dda8516706c53bea25c8cbbc578f2fd1583e1355c017fb3937f6ff71ddf37d99a",
+      "role": "SUPERVISOR",
+      "jobTitle": "Customer Support & Service Desk Lead",
+      "department": "Customer Support",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:30:00.000Z",
+      "updatedAt": "2026-08-01T08:30:00.000Z"
+    },
+    {
+      "id": "user-tech-luthando",
+      "name": "Luthando Didiza",
+      "email": "tech.luthando@capaciti.org",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "IT Infrastructure & Systems",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T08:00:00.000Z",
+      "updatedAt": "2026-08-02T08:00:00.000Z"
+    },
+    {
+      "id": "user-tech-zandile",
+      "name": "Zandile Nkosi",
+      "email": "zandile.tech@capaciti.org",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "Network & Cloud Systems",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T08:30:00.000Z",
+      "updatedAt": "2026-08-02T08:30:00.000Z"
+    },
+    {
+      "id": "user-tech-tebogo",
+      "name": "Tebogo Molefe",
+      "email": "tebogo.tech@capaciti.org",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "Hardware & Asset Management",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T09:00:00.000Z",
+      "updatedAt": "2026-08-02T09:00:00.000Z"
+    },
+    {
+      "id": "user-tech-farai",
+      "name": "Farai Moyo",
+      "email": "farai.tech@capaciti.org",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "Software & Application Support",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T09:30:00.000Z",
+      "updatedAt": "2026-08-02T09:30:00.000Z"
+    },
+    {
+      "id": "user-tech-anathi",
+      "name": "Anathi Dlamini",
+      "email": "anathi.tech@capaciti.org",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "Identity & Security Ops",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T10:00:00.000Z",
+      "updatedAt": "2026-08-02T10:00:00.000Z"
+    },
+    {
+      "id": "user-cust-mbali",
+      "name": "Mbali Entle Mpendu",
+      "email": "mbalientlempendu02@gmail.com",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Digital Skills Academy / Cohort 24",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-03T10:00:00.000Z",
+      "updatedAt": "2026-08-03T10:00:00.000Z"
+    },
+    {
+      "id": "user-emp-bongani",
+      "name": "Bongani Sithole",
+      "email": "bongani.sithole@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Finance & Accounting",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-03T11:00:00.000Z",
+      "updatedAt": "2026-08-03T11:00:00.000Z"
+    },
+    {
+      "id": "user-emp-kagiso",
+      "name": "Kagiso Mokoena",
+      "email": "kagiso.mokoena@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Human Resources",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-03T11:30:00.000Z",
+      "updatedAt": "2026-08-03T11:30:00.000Z"
+    },
+    {
+      "id": "user-cust-lerato",
+      "name": "Lerato Pillay",
+      "email": "lerato.pillay@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Software Engineering Academy",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-04T09:00:00.000Z",
+      "updatedAt": "2026-08-04T09:00:00.000Z"
+    },
+    {
+      "id": "user-emp-thabo",
+      "name": "Thabo Van Der Merwe",
+      "email": "thabo.vdm@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Marketing & Communications",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-04T09:30:00.000Z",
+      "updatedAt": "2026-08-04T09:30:00.000Z"
+    },
+    {
+      "id": "user-cust-precious",
+      "name": "Precious Ndlovu",
+      "email": "precious.ndlovu@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Data Analytics Cohort",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-04T10:00:00.000Z",
+      "updatedAt": "2026-08-04T10:00:00.000Z"
+    },
+    {
+      "id": "user-emp-sibusiso",
+      "name": "Sibusiso Cele",
+      "email": "sibusiso.cele@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Procurement & Facilities",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-05T08:00:00.000Z",
+      "updatedAt": "2026-08-05T08:00:00.000Z"
+    },
+    {
+      "id": "user-cust-nomvula",
+      "name": "Nomvula Zulu",
+      "email": "nomvula.zulu@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Cybersecurity Training Track",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-05T08:30:00.000Z",
+      "updatedAt": "2026-08-05T08:30:00.000Z"
+    },
+    {
+      "id": "user-emp-keanu",
+      "name": "Keanu Petersen",
+      "email": "keanu.petersen@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Operations & Logistical Support",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-05T09:00:00.000Z",
+      "updatedAt": "2026-08-05T09:00:00.000Z"
+    },
+    {
+      "id": "user-cust-ayanda",
+      "name": "Ayanda Gumede",
+      "email": "ayanda.gumede@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Cloud Practitioners Cohort",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-06T09:30:00.000Z",
+      "updatedAt": "2026-08-06T09:30:00.000Z"
+    },
+    {
+      "id": "user-emp-rethabile",
+      "name": "Rethabile Modise",
+      "email": "rethabile.modise@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "EMPLOYEE",
+      "department": "Talent Placement & Partnerships",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-06T10:00:00.000Z",
+      "updatedAt": "2026-08-06T10:00:00.000Z"
+    },
+    {
+      "id": "user-cust-gugu",
+      "name": "Gugulethu Baloyi",
+      "email": "gugu.baloyi@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "AI & Machine Learning Fellow",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-07T08:00:00.000Z",
+      "updatedAt": "2026-08-07T08:00:00.000Z"
+    },
+    {
+      "id": "user-cust-jabulani",
+      "name": "Jabulani Khoza",
+      "email": "jabulani.khoza@capaciti.org",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Business Analysis Cohort",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-07T08:30:00.000Z",
+      "updatedAt": "2026-08-07T08:30:00.000Z"
+    },
+    {
+      "id": "user-tech-luthando-alias",
+      "name": "Luthando Didiza",
+      "email": "luthandodidiza197@gmail.com",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "IT Infrastructure & Systems",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T08:00:00.000Z",
+      "updatedAt": "2026-08-02T08:00:00.000Z"
+    },
+    {
+      "id": "user-1788251153324-290",
+      "name": "Test User",
+      "email": "testuser@example.com",
+      "passwordHash": "a814e84caa21263b7ba8a50936c12256ea17868d8e0c62bb75e16b006d5e4a3b9e792faacc0df4d02d72e37a7387d5264368c2f76abf29731ba51d47637e11d4",
+      "role": "CUSTOMER",
+      "department": "Digital Skills Academy",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-09-01T08:25:53.325Z",
+      "updatedAt": "2026-09-01T08:25:53.325Z"
+    },
+    {
+      "id": "user-1788251205134-998",
+      "name": "New Learner",
+      "email": "learner.new@capaciti.org.za",
+      "passwordHash": "0feb8bd8a97059df430b0ef2477dbb6c34712b4f8073957b62b384cc073c692fc8ef0fddbf7f75f4668069b4725db7b0fd06332c3fd701585293488d031aa98b",
+      "role": "CUSTOMER",
+      "department": "Digital Skills Academy",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-09-01T08:26:45.135Z",
+      "updatedAt": "2026-09-01T08:26:45.135Z"
+    },
+    {
+      "id": "user-1788251207643-171",
+      "name": "Alex Tech",
+      "email": "alex.tech@capaciti.org.za",
+      "passwordHash": "0feb8bd8a97059df430b0ef2477dbb6c34712b4f8073957b62b384cc073c692fc8ef0fddbf7f75f4668069b4725db7b0fd06332c3fd701585293488d031aa98b",
+      "role": "TECHNICIAN",
+      "department": "IT Support & Systems",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-09-01T08:26:47.644Z",
+      "updatedAt": "2026-09-01T08:26:47.644Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat-1",
+      "name": "IT Support",
+      "description": "Hardware, VPN, workstation setup, and endpoint troubleshooting",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-2",
+      "name": "Network & Cloud",
+      "description": "Firewall, DNS, AWS/Azure staging environments, and connectivity",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-3",
+      "name": "Account Access",
+      "description": "Identity federation, MFA resets, Okta/Azure SSO lockouts, and IAM privileges",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-4",
+      "name": "Hardware & Assets",
+      "description": "Laptops, monitors, peripheral repairs, and device replacements",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-5",
+      "name": "Software & SaaS",
+      "description": "IDE setup, GitHub Enterprise, Zoom, Figma, and developer tooling",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-6",
+      "name": "Facilities & Ops",
+      "description": "Lab air conditioning, power backup, badge access, and campus logistics",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-7",
+      "name": "Finance",
+      "description": "Invoices, expense claims, vendor disbursements, and budget reviews",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-8",
+      "name": "Human Resources",
+      "description": "Benefits, onboarding, leave balances, policy inquiries, and payroll",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-9",
+      "name": "Procurement",
+      "description": "Hardware procurement, software subscriptions, and vendor contracts",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    },
+    {
+      "id": "cat-10",
+      "name": "General Inquiry",
+      "description": "Cross-functional queries and general workplace requests",
+      "isActive": true,
+      "createdAt": "2026-08-01T08:00:00.000Z"
+    }
+  ],
+  "requests": [
+    {
+      "id": "REQ-2026-0821-1001",
+      "userId": "user-cust-mbali",
+      "userName": "Mbali Entle Mpendu",
+      "userEmail": "mbalientlempendu02@gmail.com",
+      "userRole": "CUSTOMER",
+      "title": "VPN Portal Credential Lockout & MFA Token Reset",
+      "description": "Received error code AUTH-401 when attempting to connect to the internal lab staging server after changing password.",
+      "requestType": "Incident",
+      "priority": "Urgent",
+      "department": "IT",
+      "status": "Resolved",
+      "slaTargetHours": 2,
+      "slaStatus": "Within SLA",
+      "resolvedAt": "2026-08-21T02:20:00.000Z",
+      "resolutionDurationHours": 0.3,
+      "assignedToUserId": "user-tech-anathi",
+      "assignedToName": "Anathi Dlamini",
+      "assignedTechnicianName": "Anathi Dlamini",
+      "category": "Account Access",
+      "resolutionNotes": "Reset Okta MFA session token and cleared cached Kerberos tickets. Verified candidate successfully reconnected to staging lab.",
+      "createdAt": "2026-08-21T02:02:00.000Z",
+      "updatedAt": "2026-08-21T02:20:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-1",
+        "requestId": "REQ-2026-0821-1001",
+        "category": "Account Access",
+        "subcategory": "MFA & Authentication Reset",
+        "summary": "Candidate locked out of VPN with AUTH-401 after password change.",
+        "recommendedAction": "Flush active token cache in Okta Admin and generate temporary SMS bypass.",
+        "aiPriority": "Urgent",
+        "confidenceScore": 0.98,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T02:02:05.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-21 02:05] Anathi Dlamini: Unlocked profile in Azure AD, user verified working."
+      ]
+    },
+    {
+      "id": "REQ-2026-0820-1002",
+      "userId": "user-cust-lerato",
+      "userName": "Lerato Pillay",
+      "userEmail": "lerato.pillay@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "Temporary AWS Sandbox Access Keys for Cohort 24 Project",
+      "description": "Need IAM programmatic access keys for AWS S3 and Lambda deployment for the cloud backend module assignment.",
+      "requestType": "Service Request",
+      "priority": "Medium",
+      "department": "IT",
+      "status": "Resolved",
+      "slaTargetHours": 24,
+      "slaStatus": "Within SLA",
+      "resolvedAt": "2026-08-20T11:45:00.000Z",
+      "resolutionDurationHours": 0.6,
+      "assignedToUserId": "user-tech-zandile",
+      "assignedToName": "Zandile Nkosi",
+      "assignedTechnicianName": "Zandile Nkosi",
+      "category": "Network & Cloud",
+      "resolutionNotes": "Provisioned temporary sandbox credentials with scoped permissions to cohort-24-dev S3 bucket and serverless execution role.",
+      "createdAt": "2026-08-20T11:10:00.000Z",
+      "updatedAt": "2026-08-20T11:45:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-2",
+        "requestId": "REQ-2026-0820-1002",
+        "category": "Network & Cloud",
+        "subcategory": "AWS Sandbox & IAM Provisioning",
+        "summary": "Learner requested scoped IAM access keys for cloud module assignment.",
+        "recommendedAction": "Attach Academy Sandbox IAM policy and send encrypted credentials via secure vault.",
+        "aiPriority": "Medium",
+        "confidenceScore": 0.95,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-20T11:10:10.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0820-1003",
+      "userId": "user-emp-thabo",
+      "userName": "Thabo Van Der Merwe",
+      "userEmail": "thabo.vdm@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Zoom Enterprise Pro License Allocation for Partner Demo Webinar",
+      "description": "Upgrading marketing Zoom seat from basic to 500-attendee webinar tier for tomorrow morning’s corporate partner demo.",
+      "requestType": "Service Request",
+      "priority": "Medium",
+      "department": "Operations",
+      "status": "Resolved",
+      "slaTargetHours": 24,
+      "slaStatus": "Within SLA",
+      "resolvedAt": "2026-08-20T14:30:00.000Z",
+      "resolutionDurationHours": 0.7,
+      "assignedToUserId": "user-tech-luthando",
+      "assignedToName": "Luthando Didiza",
+      "assignedTechnicianName": "Luthando Didiza",
+      "category": "Software & SaaS",
+      "resolutionNotes": "Reallocated unused Zoom Enterprise Large Meeting add-on to thabo.vdm@capaciti.org and scheduled test session.",
+      "createdAt": "2026-08-20T13:48:00.000Z",
+      "updatedAt": "2026-08-20T14:30:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-3",
+        "requestId": "REQ-2026-0820-1003",
+        "category": "Software & SaaS",
+        "subcategory": "Zoom License Tier Upgrade",
+        "summary": "Marketing staff requested temporary Zoom Large Meeting license for partner presentation.",
+        "recommendedAction": "Reassign available license seat in Zoom Admin Portal.",
+        "aiPriority": "Medium",
+        "confidenceScore": 0.94,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-20T13:48:15.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0818-2001",
+      "userId": "user-emp-sibusiso",
+      "userName": "Sibusiso Cele",
+      "userEmail": "sibusiso.cele@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Cape Town Campus Core Cisco Switch Power Supply Failure",
+      "description": "Redundant power supply in Rack B blew during thunderstorm. Switch dropped secondary uplink to lab workstations.",
+      "requestType": "Incident",
+      "priority": "Urgent",
+      "department": "IT",
+      "status": "Resolved",
+      "slaTargetHours": 2,
+      "slaStatus": "Breached",
+      "resolvedAt": "2026-08-19T14:00:00.000Z",
+      "resolutionDurationHours": 27.5,
+      "assignedToUserId": "user-tech-tebogo",
+      "assignedToName": "Tebogo Molefe",
+      "assignedTechnicianName": "Tebogo Molefe",
+      "category": "Hardware & Assets",
+      "resolutionNotes": "Replacement OEM Cisco Catalyst 9300 PSU ordered from distributor arrived delayed by 24h. Installed, load tested, and secondary rail restored.",
+      "createdAt": "2026-08-18T10:30:00.000Z",
+      "updatedAt": "2026-08-19T14:00:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-4",
+        "requestId": "REQ-2026-0818-2001",
+        "category": "Hardware & Assets",
+        "subcategory": "Network Hardware Infrastructure",
+        "summary": "Critical hardware failure on campus core switch secondary power supply.",
+        "recommendedAction": "Dispatch hardware technician with replacement hot-swap PSU module.",
+        "aiPriority": "Urgent",
+        "confidenceScore": 0.99,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-18T10:30:10.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-18 11:00] Tebogo Molefe: Local spare depleted. Ordered urgent courier from supplier.",
+        "[2026-08-19 13:45] Tebogo Molefe: Part arrived and installed. SLA breached due to courier logistics."
+      ]
+    },
+    {
+      "id": "REQ-2026-0817-2002",
+      "userId": "user-emp-bongani",
+      "userName": "Bongani Sithole",
+      "userEmail": "bongani.sithole@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Finance ERP Vendor Disbursement Reconciliation Glitch",
+      "description": "Bank payment batch file export fails with XML schema validation error when generating payments over R100,000.",
+      "requestType": "Complaint",
+      "priority": "High",
+      "department": "Finance",
+      "status": "Resolved",
+      "slaTargetHours": 8,
+      "slaStatus": "Breached",
+      "resolvedAt": "2026-08-19T09:15:00.000Z",
+      "resolutionDurationHours": 42,
+      "assignedToUserId": "user-tech-farai",
+      "assignedToName": "Farai Moyo",
+      "assignedTechnicianName": "Farai Moyo",
+      "category": "Finance",
+      "resolutionNotes": "Identified corrupted character encoding in vendor bank branch codes. Patched XML export sanitization script and re-ran payment batches successfully.",
+      "createdAt": "2026-08-17T15:15:00.000Z",
+      "updatedAt": "2026-08-19T09:15:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-5",
+        "requestId": "REQ-2026-0817-2002",
+        "category": "Finance",
+        "subcategory": "ERP Integration & Payment Processing",
+        "summary": "ERP payment export failure on high-value batches due to XML schema exception.",
+        "recommendedAction": "Debug ERP XML serializer and audit database character encoding for vendor table.",
+        "aiPriority": "High",
+        "confidenceScore": 0.96,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-17T15:15:12.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0819-2003",
+      "userId": "user-cust-precious",
+      "userName": "Precious Ndlovu",
+      "userEmail": "precious.ndlovu@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "Dual 4K Monitor Arm Hardware Replacement for Lab 3 Desk 12",
+      "description": "Hydraulic tension arm collapsed on workstation monitor stand, preventing proper screen positioning for cohort data lab sessions.",
+      "requestType": "Service Request",
+      "priority": "Medium",
+      "department": "Operations",
+      "status": "In Progress",
+      "slaTargetHours": 24,
+      "slaStatus": "Breached",
+      "assignedToUserId": "user-tech-tebogo",
+      "assignedToName": "Tebogo Molefe",
+      "assignedTechnicianName": "Tebogo Molefe",
+      "category": "Hardware & Assets",
+      "createdAt": "2026-08-19T08:00:00.000Z",
+      "updatedAt": "2026-08-20T16:00:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-6",
+        "requestId": "REQ-2026-0819-2003",
+        "category": "Hardware & Assets",
+        "subcategory": "Ergonomic Desk Hardware",
+        "summary": "Mechanical failure of monitor mount in training lab.",
+        "recommendedAction": "Replace with heavy-duty VESA dual arm stand from store room.",
+        "aiPriority": "Medium",
+        "confidenceScore": 0.92,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-19T08:00:10.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-20 16:00] Tebogo Molefe: Warehouse out of stock, requisition sent to procurement."
+      ]
+    },
+    {
+      "id": "REQ-2026-0821-3001",
+      "userId": "user-emp-keanu",
+      "userName": "Keanu Petersen",
+      "userEmail": "keanu.petersen@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Johannesburg Campus Fiber Gateway Failover Configuration",
+      "description": "Setting up automated BGP failover between primary Dark Fibre Africa line and backup 5G business gateway.",
+      "requestType": "Service Request",
+      "priority": "High",
+      "department": "IT",
+      "status": "In Progress",
+      "slaTargetHours": 8,
+      "slaStatus": "Within SLA",
+      "assignedToUserId": "user-tech-zandile",
+      "assignedToName": "Zandile Nkosi",
+      "assignedTechnicianName": "Zandile Nkosi",
+      "category": "Network & Cloud",
+      "createdAt": "2026-08-21T01:30:00.000Z",
+      "updatedAt": "2026-08-21T02:45:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-7",
+        "requestId": "REQ-2026-0821-3001",
+        "category": "Network & Cloud",
+        "subcategory": "WAN Routing & Redundancy",
+        "summary": "Campus network redundancy setup for secondary automated gateway switch.",
+        "recommendedAction": "Verify BGP neighbor peering table and execute simulated link drop test.",
+        "aiPriority": "High",
+        "confidenceScore": 0.95,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T01:30:15.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-21 02:30] Zandile Nkosi: BGP route maps configured. Testing failover latency."
+      ]
+    },
+    {
+      "id": "REQ-2026-0821-3002",
+      "userId": "user-cust-gugu",
+      "userName": "Gugulethu Baloyi",
+      "userEmail": "gugu.baloyi@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "GitHub Enterprise Organization Team Provisioning for AI Fellows",
+      "description": "Requesting access to the capaciti-ai-labs GitHub Enterprise organization and Copilot seats for 12 new AI Fellows.",
+      "requestType": "Service Request",
+      "priority": "Medium",
+      "department": "IT",
+      "status": "In Progress",
+      "slaTargetHours": 24,
+      "slaStatus": "Within SLA",
+      "assignedToUserId": "user-tech-luthando",
+      "assignedToName": "Luthando Didiza",
+      "assignedTechnicianName": "Luthando Didiza",
+      "category": "Software & SaaS",
+      "createdAt": "2026-08-21T00:15:00.000Z",
+      "updatedAt": "2026-08-21T02:00:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-8",
+        "requestId": "REQ-2026-0821-3002",
+        "category": "Software & SaaS",
+        "subcategory": "Developer Tooling & GitHub Enterprise",
+        "summary": "Bulk GitHub organization invitations and Copilot seat provisioning.",
+        "recommendedAction": "Map GitHub SCIM group to Azure AD AI-Fellows security group.",
+        "aiPriority": "Medium",
+        "confidenceScore": 0.97,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T00:15:10.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0821-3003",
+      "userId": "user-emp-rethabile",
+      "userName": "Rethabile Modise",
+      "userEmail": "rethabile.modise@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Candidate Placement CRM Webhook Sync Latency Investigation",
+      "description": "Placement partner interview updates from Salesforce are experiencing a 45-minute delay before appearing in the Capaciti candidate portal.",
+      "requestType": "Incident",
+      "priority": "High",
+      "department": "Operations",
+      "status": "In Progress",
+      "slaTargetHours": 8,
+      "slaStatus": "Within SLA",
+      "assignedToUserId": "user-tech-farai",
+      "assignedToName": "Farai Moyo",
+      "assignedTechnicianName": "Farai Moyo",
+      "category": "Software & SaaS",
+      "createdAt": "2026-08-21T02:00:00.000Z",
+      "updatedAt": "2026-08-21T03:10:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-9",
+        "requestId": "REQ-2026-0821-3003",
+        "category": "Software & SaaS",
+        "subcategory": "Webhook Queue & API Sync",
+        "summary": "Salesforce webhook ingestion queue bottleneck delaying interview scheduling status.",
+        "recommendedAction": "Check RabbitMQ message queue depth and worker container concurrency.",
+        "aiPriority": "High",
+        "confidenceScore": 0.94,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T02:00:10.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0821-4001",
+      "userId": "user-cust-nomvula",
+      "userName": "Nomvula Zulu",
+      "userEmail": "nomvula.zulu@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "CRITICAL: LMS Assessment Portal 504 Gateway Timeout Before Mid-Term Exam",
+      "description": "Entire cybersecurity cohort of 40 candidates unable to load the practical assessment module. HTTP 504 Gateway Timeout returned by nginx.",
+      "requestType": "Incident",
+      "priority": "Urgent",
+      "department": "IT",
+      "status": "In Progress",
+      "slaTargetHours": 2,
+      "slaStatus": "At Risk",
+      "assignedToUserId": "user-tech-zandile",
+      "assignedToName": "Zandile Nkosi",
+      "assignedTechnicianName": "Zandile Nkosi",
+      "category": "Network & Cloud",
+      "createdAt": "2026-08-21T02:15:00.000Z",
+      "updatedAt": "2026-08-21T03:30:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-10",
+        "requestId": "REQ-2026-0821-4001",
+        "category": "Network & Cloud",
+        "subcategory": "Web Server & LMS Platform Downtime",
+        "summary": "Mass student access failure to online assessment portal due to upstream proxy timeout.",
+        "recommendedAction": "Scale web app container pool to 6 replicas and flush Redis query cache.",
+        "aiPriority": "Urgent",
+        "confidenceScore": 0.99,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T02:15:05.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-21 02:45] Zandile Nkosi: Scaled backend pod autoscaler from 2 to 8 nodes. Validating connection pool."
+      ]
+    },
+    {
+      "id": "REQ-2026-0821-4002",
+      "userId": "user-emp-sibusiso",
+      "userName": "Sibusiso Cele",
+      "userEmail": "sibusiso.cele@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "CRITICAL: Server Room Precision Air Conditioning Thermal Sensor Alarm",
+      "description": "HVAC unit 2 in main server facility tripped. Ambient temperature rose from 20°C to 28.5°C over the past 40 minutes.",
+      "requestType": "Incident",
+      "priority": "Urgent",
+      "department": "Operations",
+      "status": "In Progress",
+      "slaTargetHours": 2,
+      "slaStatus": "Within SLA",
+      "assignedToUserId": "user-tech-tebogo",
+      "assignedToName": "Tebogo Molefe",
+      "assignedTechnicianName": "Tebogo Molefe",
+      "category": "Facilities & Ops",
+      "createdAt": "2026-08-21T03:00:00.000Z",
+      "updatedAt": "2026-08-21T03:35:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-11",
+        "requestId": "REQ-2026-0821-4002",
+        "category": "Facilities & Ops",
+        "subcategory": "Data Center Thermal Management",
+        "summary": "Server room HVAC failure threatening hardware overheating and emergency shutdown.",
+        "recommendedAction": "Switch on secondary backup split units immediately and notify facilities contractor.",
+        "aiPriority": "Urgent",
+        "confidenceScore": 0.99,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T03:00:05.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-21 03:15] Tebogo Molefe: Secondary cooling engaged, room temp stabilizing at 23°C."
+      ]
+    },
+    {
+      "id": "REQ-2026-0820-5001",
+      "userId": "user-cust-ayanda",
+      "userName": "Ayanda Gumede",
+      "userEmail": "ayanda.gumede@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "Swollen Battery Diagnostic for Academy Loaner Laptop #CAP-8812",
+      "description": "Trackpad lifting and base plate warped on Lenovo ThinkPad loaner unit. Trackpad clicks no longer register.",
+      "requestType": "Incident",
+      "priority": "High",
+      "department": "IT",
+      "status": "In Progress",
+      "slaTargetHours": 8,
+      "slaStatus": "At Risk",
+      "assignedToUserId": "user-tech-tebogo",
+      "assignedToName": "Tebogo Molefe",
+      "assignedTechnicianName": "Tebogo Molefe",
+      "category": "Hardware & Assets",
+      "createdAt": "2026-08-20T21:15:00.000Z",
+      "updatedAt": "2026-08-21T03:20:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-12",
+        "requestId": "REQ-2026-0820-5001",
+        "category": "Hardware & Assets",
+        "subcategory": "Lithium Battery Hazard & Hardware Replacement",
+        "summary": "Safety hazard: swollen battery casing on learner laptop.",
+        "recommendedAction": "Immediate safe disposal in fireproof container and issue swap unit from buffer stock.",
+        "aiPriority": "High",
+        "confidenceScore": 0.98,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-20T21:15:10.000Z"
+      },
+      "internalNotes": [
+        "[2026-08-21 02:00] Tebogo Molefe: Unit quarantined, preparing replacement Dell Latitude."
+      ]
+    },
+    {
+      "id": "REQ-2026-0821-5002",
+      "userId": "user-cust-jabulani",
+      "userName": "Jabulani Khoza",
+      "userEmail": "jabulani.khoza@capaciti.org",
+      "userRole": "CUSTOMER",
+      "title": "Azure AD Conditional Access Policy Lockout on PowerBI Gateway",
+      "description": "Cannot refresh shared Capstone analytics dashboard due to location-based compliance requirement rejecting campus Wi-Fi IP range.",
+      "requestType": "Incident",
+      "priority": "Urgent",
+      "department": "IT",
+      "status": "In Progress",
+      "slaTargetHours": 2,
+      "slaStatus": "At Risk",
+      "assignedToUserId": "user-tech-anathi",
+      "assignedToName": "Anathi Dlamini",
+      "assignedTechnicianName": "Anathi Dlamini",
+      "category": "Account Access",
+      "createdAt": "2026-08-21T02:05:00.000Z",
+      "updatedAt": "2026-08-21T03:30:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-13",
+        "requestId": "REQ-2026-0821-5002",
+        "category": "Account Access",
+        "subcategory": "Conditional Access & IP Whitelisting",
+        "summary": "Campus IP range missing from Azure AD trusted named locations list.",
+        "recommendedAction": "Add new public IPv4 egress subnet to Microsoft Entra named locations.",
+        "aiPriority": "Urgent",
+        "confidenceScore": 0.96,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-21T02:05:10.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0819-6001",
+      "userId": "user-emp-bongani",
+      "userName": "Bongani Sithole",
+      "userEmail": "bongani.sithole@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Q3 Cloud Budget Allocation & FinOps Cost Center Provisioning",
+      "description": "Setting up departmental budget alerts and AWS Cost Explorer tags for upcoming Q3 data engineering bootcamps.",
+      "requestType": "Service Request",
+      "priority": "Medium",
+      "department": "Finance",
+      "status": "Resolved",
+      "slaTargetHours": 24,
+      "slaStatus": "Within SLA",
+      "resolvedAt": "2026-08-19T15:30:00.000Z",
+      "resolutionDurationHours": 5.5,
+      "assignedToUserId": "user-manager-naledi",
+      "assignedToName": "Naledi Khumalo",
+      "assignedTechnicianName": "Naledi Khumalo",
+      "category": "Finance",
+      "resolutionNotes": "AWS Budgets configured with 80% threshold notifications delivered to finance@capaciti.org and Slack #ops-alerts.",
+      "createdAt": "2026-08-19T10:00:00.000Z",
+      "updatedAt": "2026-08-19T15:30:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-14",
+        "requestId": "REQ-2026-0819-6001",
+        "category": "Finance",
+        "subcategory": "Cloud FinOps & Cost Center Control",
+        "summary": "Cloud budget ceiling and automated threshold alerts setup.",
+        "recommendedAction": "Deploy Terraform AWS Budget template with SNS topic alerting.",
+        "aiPriority": "Medium",
+        "confidenceScore": 0.95,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-19T10:00:15.000Z"
+      }
+    },
+    {
+      "id": "REQ-2026-0818-6002",
+      "userId": "user-emp-kagiso",
+      "userName": "Kagiso Mokoena",
+      "userEmail": "kagiso.mokoena@capaciti.org",
+      "userRole": "EMPLOYEE",
+      "title": "Updated 2026 Health Plan & Dependent Benefits Policy Guide",
+      "description": "Requesting verified copy of the 2026 Discovery Health executive benefits schedule for upcoming employee wellness town hall.",
+      "requestType": "Question",
+      "priority": "Low",
+      "department": "Human Resources",
+      "status": "Resolved",
+      "slaTargetHours": 72,
+      "slaStatus": "Within SLA",
+      "resolvedAt": "2026-08-18T14:15:00.000Z",
+      "resolutionDurationHours": 3.2,
+      "assignedToUserId": "user-manager-naledi",
+      "assignedToName": "Naledi Khumalo",
+      "assignedTechnicianName": "Naledi Khumalo",
+      "category": "Human Resources",
+      "resolutionNotes": "Uploaded new PDF handbook to HR portal and shared direct download link.",
+      "createdAt": "2026-08-18T11:00:00.000Z",
+      "updatedAt": "2026-08-18T14:15:00.000Z",
+      "aiClassification": {
+        "id": "ai-seed-15",
+        "requestId": "REQ-2026-0818-6002",
+        "category": "Human Resources",
+        "subcategory": "Employee Benefits & Policies",
+        "summary": "HR staff requested latest employee healthcare handbook.",
+        "recommendedAction": "Provide published benefits documentation from knowledge repository.",
+        "aiPriority": "Low",
+        "confidenceScore": 0.98,
+        "model": "gemini-3.7-flash",
+        "createdAt": "2026-08-18T11:00:05.000Z"
+      }
+    }
+  ],
+  "aiClassifications": [
+    {
+      "id": "ai-seed-1",
+      "requestId": "REQ-2026-0821-1001",
+      "category": "Account Access",
+      "subcategory": "MFA & Authentication Reset",
+      "summary": "Candidate locked out of VPN with AUTH-401 after password change.",
+      "recommendedAction": "Flush active token cache in Okta Admin and generate temporary SMS bypass.",
+      "aiPriority": "Urgent",
+      "confidenceScore": 0.98,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T02:02:05.000Z"
+    },
+    {
+      "id": "ai-seed-2",
+      "requestId": "REQ-2026-0820-1002",
+      "category": "Network & Cloud",
+      "subcategory": "AWS Sandbox & IAM Provisioning",
+      "summary": "Learner requested scoped IAM access keys for cloud module assignment.",
+      "recommendedAction": "Attach Academy Sandbox IAM policy and send encrypted credentials via secure vault.",
+      "aiPriority": "Medium",
+      "confidenceScore": 0.95,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-20T11:10:10.000Z"
+    },
+    {
+      "id": "ai-seed-3",
+      "requestId": "REQ-2026-0820-1003",
+      "category": "Software & SaaS",
+      "subcategory": "Zoom License Tier Upgrade",
+      "summary": "Marketing staff requested temporary Zoom Large Meeting license for partner presentation.",
+      "recommendedAction": "Reassign available license seat in Zoom Admin Portal.",
+      "aiPriority": "Medium",
+      "confidenceScore": 0.94,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-20T13:48:15.000Z"
+    },
+    {
+      "id": "ai-seed-4",
+      "requestId": "REQ-2026-0818-2001",
+      "category": "Hardware & Assets",
+      "subcategory": "Network Hardware Infrastructure",
+      "summary": "Critical hardware failure on campus core switch secondary power supply.",
+      "recommendedAction": "Dispatch hardware technician with replacement hot-swap PSU module.",
+      "aiPriority": "Urgent",
+      "confidenceScore": 0.99,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-18T10:30:10.000Z"
+    },
+    {
+      "id": "ai-seed-5",
+      "requestId": "REQ-2026-0817-2002",
+      "category": "Finance",
+      "subcategory": "ERP Integration & Payment Processing",
+      "summary": "ERP payment export failure on high-value batches due to XML schema exception.",
+      "recommendedAction": "Debug ERP XML serializer and audit database character encoding for vendor table.",
+      "aiPriority": "High",
+      "confidenceScore": 0.96,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-17T15:15:12.000Z"
+    },
+    {
+      "id": "ai-seed-6",
+      "requestId": "REQ-2026-0819-2003",
+      "category": "Hardware & Assets",
+      "subcategory": "Ergonomic Desk Hardware",
+      "summary": "Mechanical failure of monitor mount in training lab.",
+      "recommendedAction": "Replace with heavy-duty VESA dual arm stand from store room.",
+      "aiPriority": "Medium",
+      "confidenceScore": 0.92,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-19T08:00:10.000Z"
+    },
+    {
+      "id": "ai-seed-7",
+      "requestId": "REQ-2026-0821-3001",
+      "category": "Network & Cloud",
+      "subcategory": "WAN Routing & Redundancy",
+      "summary": "Campus network redundancy setup for secondary automated gateway switch.",
+      "recommendedAction": "Verify BGP neighbor peering table and execute simulated link drop test.",
+      "aiPriority": "High",
+      "confidenceScore": 0.95,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T01:30:15.000Z"
+    },
+    {
+      "id": "ai-seed-8",
+      "requestId": "REQ-2026-0821-3002",
+      "category": "Software & SaaS",
+      "subcategory": "Developer Tooling & GitHub Enterprise",
+      "summary": "Bulk GitHub organization invitations and Copilot seat provisioning.",
+      "recommendedAction": "Map GitHub SCIM group to Azure AD AI-Fellows security group.",
+      "aiPriority": "Medium",
+      "confidenceScore": 0.97,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T00:15:10.000Z"
+    },
+    {
+      "id": "ai-seed-9",
+      "requestId": "REQ-2026-0821-3003",
+      "category": "Software & SaaS",
+      "subcategory": "Webhook Queue & API Sync",
+      "summary": "Salesforce webhook ingestion queue bottleneck delaying interview scheduling status.",
+      "recommendedAction": "Check RabbitMQ message queue depth and worker container concurrency.",
+      "aiPriority": "High",
+      "confidenceScore": 0.94,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T02:00:10.000Z"
+    },
+    {
+      "id": "ai-seed-10",
+      "requestId": "REQ-2026-0821-4001",
+      "category": "Network & Cloud",
+      "subcategory": "Web Server & LMS Platform Downtime",
+      "summary": "Mass student access failure to online assessment portal due to upstream proxy timeout.",
+      "recommendedAction": "Scale web app container pool to 6 replicas and flush Redis query cache.",
+      "aiPriority": "Urgent",
+      "confidenceScore": 0.99,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T02:15:05.000Z"
+    },
+    {
+      "id": "ai-seed-11",
+      "requestId": "REQ-2026-0821-4002",
+      "category": "Facilities & Ops",
+      "subcategory": "Data Center Thermal Management",
+      "summary": "Server room HVAC failure threatening hardware overheating and emergency shutdown.",
+      "recommendedAction": "Switch on secondary backup split units immediately and notify facilities contractor.",
+      "aiPriority": "Urgent",
+      "confidenceScore": 0.99,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T03:00:05.000Z"
+    },
+    {
+      "id": "ai-seed-12",
+      "requestId": "REQ-2026-0820-5001",
+      "category": "Hardware & Assets",
+      "subcategory": "Lithium Battery Hazard & Hardware Replacement",
+      "summary": "Safety hazard: swollen battery casing on learner laptop.",
+      "recommendedAction": "Immediate safe disposal in fireproof container and issue swap unit from buffer stock.",
+      "aiPriority": "High",
+      "confidenceScore": 0.98,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-20T21:15:10.000Z"
+    },
+    {
+      "id": "ai-seed-13",
+      "requestId": "REQ-2026-0821-5002",
+      "category": "Account Access",
+      "subcategory": "Conditional Access & IP Whitelisting",
+      "summary": "Campus IP range missing from Azure AD trusted named locations list.",
+      "recommendedAction": "Add new public IPv4 egress subnet to Microsoft Entra named locations.",
+      "aiPriority": "Urgent",
+      "confidenceScore": 0.96,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-21T02:05:10.000Z"
+    },
+    {
+      "id": "ai-seed-14",
+      "requestId": "REQ-2026-0819-6001",
+      "category": "Finance",
+      "subcategory": "Cloud FinOps & Cost Center Control",
+      "summary": "Cloud budget ceiling and automated threshold alerts setup.",
+      "recommendedAction": "Deploy Terraform AWS Budget template with SNS topic alerting.",
+      "aiPriority": "Medium",
+      "confidenceScore": 0.95,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-19T10:00:15.000Z"
+    },
+    {
+      "id": "ai-seed-15",
+      "requestId": "REQ-2026-0818-6002",
+      "category": "Human Resources",
+      "subcategory": "Employee Benefits & Policies",
+      "summary": "HR staff requested latest employee healthcare handbook.",
+      "recommendedAction": "Provide published benefits documentation from knowledge repository.",
+      "aiPriority": "Low",
+      "confidenceScore": 0.98,
+      "model": "gemini-3.7-flash",
+      "createdAt": "2026-08-18T11:00:05.000Z"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "audit-1788251207645-76",
+      "actorUserId": "user-1788251207643-171",
+      "actorEmail": "alex.tech@capaciti.org.za",
+      "action": "REGISTER",
+      "targetType": "USER",
+      "targetId": "user-1788251207643-171",
+      "details": "User registered with role TECHNICIAN",
+      "timestamp": "2026-09-01T08:26:47.645Z"
+    },
+    {
+      "id": "audit-1788251205136-308",
+      "actorUserId": "user-1788251205134-998",
+      "actorEmail": "learner.new@capaciti.org.za",
+      "action": "REGISTER",
+      "targetType": "USER",
+      "targetId": "user-1788251205134-998",
+      "details": "User registered with role CUSTOMER",
+      "timestamp": "2026-09-01T08:26:45.136Z"
+    },
+    {
+      "id": "audit-1788251153326-716",
+      "actorUserId": "user-1788251153324-290",
+      "actorEmail": "testuser@example.com",
+      "action": "REGISTER",
+      "targetType": "USER",
+      "targetId": "user-1788251153324-290",
+      "details": "User registered with role CUSTOMER",
+      "timestamp": "2026-09-01T08:25:53.326Z"
+    },
+    {
+      "id": "audit-1788251112848-761",
+      "actorUserId": "user-global-admin",
+      "actorEmail": "admin@capaciti.org",
+      "action": "LOGIN",
+      "targetType": "USER",
+      "targetId": "user-global-admin",
+      "details": "User logged in successfully",
+      "timestamp": "2026-09-01T08:25:12.848Z"
+    },
+    {
+      "id": "audit-1788251112845-283",
+      "actorUserId": "user-global-admin",
+      "actorEmail": "admin@capaciti.org",
+      "action": "LOGIN",
+      "targetType": "USER",
+      "targetId": "user-global-admin",
+      "details": "User logged in successfully",
+      "timestamp": "2026-09-01T08:25:12.845Z"
+    },
+    {
+      "id": "audit-init-1",
+      "actorUserId": "user-global-admin",
+      "actorEmail": "admin@capaciti.org",
+      "action": "SYSTEM_INITIALIZED",
+      "targetType": "SYSTEM",
+      "targetId": "sys-1",
+      "details": "Capaciti Service Hub initialized with 20 registered accounts, live SLA telemetry, intelligent auto-classification, and enterprise workflows.",
+      "timestamp": "2026-08-21T00:00:00.000Z"
+    }
+  ],
+  "emailNotifications": [],
+  "executiveReports": [],
+  "insights": [],
+  "workflowRules": [
+    {
+      "id": "rule-wf-1",
+      "name": "Critical Security Incident Auto-Routing & Escalation",
+      "description": "Auto-assigns urgent security & IAM lockout tickets to Lead Security Technician with instant alert dispatch.",
+      "trigger": "on_ticket_created",
+      "conditions": [
+        {
+          "field": "priority",
+          "operator": "equals",
+          "value": "Urgent"
+        },
+        {
+          "field": "category",
+          "operator": "in",
+          "value": [
+            "Account Access",
+            "Network & Cloud",
+            "IT Support"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "type": "auto_assign",
+          "targetValue": "user-tech-luthando",
+          "details": "Assigned to Luthando Didiza (Lead Tech)"
+        },
+        {
+          "type": "set_priority",
+          "targetValue": "Urgent",
+          "details": "Enforce 2-hour SLA"
+        },
+        {
+          "type": "send_email_alert",
+          "targetValue": "luthando.tech@capaciti.org",
+          "details": "Dispatch High-Priority Security Notification"
+        },
+        {
+          "type": "apply_tag",
+          "targetValue": "CRITICAL_SECURITY"
+        }
+      ],
+      "isActive": true,
+      "executionCount": 14,
+      "lastExecutedAt": "2026-08-24T09:15:00.000Z",
+      "createdAt": "2026-08-20T08:00:00.000Z",
+      "createdBy": "Global Administrator"
+    },
+    {
+      "id": "rule-wf-2",
+      "name": "High-Value Hardware & Asset Approval Gate",
+      "description": "Intercepts hardware equipment requisition requests and automatically creates a formal Supervisor Approval ticket.",
+      "trigger": "on_ticket_created",
+      "conditions": [
+        {
+          "field": "category",
+          "operator": "equals",
+          "value": "Hardware & Assets"
+        },
+        {
+          "field": "requestType",
+          "operator": "equals",
+          "value": "Service Request"
+        }
+      ],
+      "actions": [
+        {
+          "type": "trigger_approval",
+          "targetValue": "EQUIPMENT_REQUISITION",
+          "details": "Route to Naledi Khumalo (Operations Supervisor)"
+        },
+        {
+          "type": "send_email_alert",
+          "targetValue": "manager@capaciti.org",
+          "details": "Send Manager Equipment Authorization Request"
+        },
+        {
+          "type": "apply_tag",
+          "targetValue": "PENDING_APPROVAL_GATE"
+        }
+      ],
+      "isActive": true,
+      "executionCount": 8,
+      "lastExecutedAt": "2026-08-24T11:40:00.000Z",
+      "createdAt": "2026-08-20T08:00:00.000Z",
+      "createdBy": "Global Administrator"
+    },
+    {
+      "id": "rule-wf-3",
+      "name": "SLA Risk Auto-Escalation (Remaining <= 4 Hours)",
+      "description": "Proactively escalates priority to High when a submitted ticket nears 75% SLA consumption.",
+      "trigger": "on_sla_warning",
+      "conditions": [
+        {
+          "field": "slaRemainingHours",
+          "operator": "greater_than",
+          "value": 0
+        }
+      ],
+      "actions": [
+        {
+          "type": "set_priority",
+          "targetValue": "High",
+          "details": "Escalate to High Priority"
+        },
+        {
+          "type": "send_email_alert",
+          "targetValue": "manager@capaciti.org",
+          "details": "Dispatch Supervisor SLA Warning"
+        }
+      ],
+      "isActive": true,
+      "executionCount": 22,
+      "lastExecutedAt": "2026-08-24T14:20:00.000Z",
+      "createdAt": "2026-08-20T08:00:00.000Z",
+      "createdBy": "Naledi Khumalo"
+    },
+    {
+      "id": "rule-wf-4",
+      "name": "Finance & Procurement Budget Sign-off Gate",
+      "description": "Routes vendor invoice and financial expense requests through formal budgetary approval before fulfillment.",
+      "trigger": "on_ticket_created",
+      "conditions": [
+        {
+          "field": "department",
+          "operator": "in",
+          "value": [
+            "Finance & Accounting",
+            "Procurement & Vendor Logistics"
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "type": "trigger_approval",
+          "targetValue": "BUDGET_EXPENSE",
+          "details": "Finance Supervisor authorization required"
+        },
+        {
+          "type": "apply_tag",
+          "targetValue": "FINANCE_AUDIT"
+        }
+      ],
+      "isActive": true,
+      "executionCount": 6,
+      "lastExecutedAt": "2026-08-23T16:00:00.000Z",
+      "createdAt": "2026-08-21T09:00:00.000Z",
+      "createdBy": "Global Administrator"
+    },
+    {
+      "id": "rule-wf-5",
+      "name": "Privilege Access & Account Unblock Gate",
+      "description": "Enforces strict Human-in-the-Loop admin sign-off and POPIA audit logging for account reactivation.",
+      "trigger": "on_ticket_created",
+      "conditions": [
+        {
+          "field": "category",
+          "operator": "equals",
+          "value": "Account Access"
+        },
+        {
+          "field": "title",
+          "operator": "contains",
+          "value": "Unblock"
+        }
+      ],
+      "actions": [
+        {
+          "type": "trigger_approval",
+          "targetValue": "ACCOUNT_UNBLOCK",
+          "details": "Requires Administrator Sign-Off"
+        },
+        {
+          "type": "apply_tag",
+          "targetValue": "POPIA_SECURITY_AUDIT"
+        }
+      ],
+      "isActive": true,
+      "executionCount": 5,
+      "lastExecutedAt": "2026-08-24T08:30:00.000Z",
+      "createdAt": "2026-08-21T10:00:00.000Z",
+      "createdBy": "Global Administrator"
+    }
+  ],
+  "workflowLogs": [],
+  "approvalRequests": [
+    {
+      "id": "APR-2026-0824-001",
+      "requestId": "REQ-2026-0824-1002",
+      "ticketTitle": "Hardware Upgrade: Developer Workstation RAM & Display for Lab 3",
+      "approvalType": "EQUIPMENT_REQUISITION",
+      "requestorId": "user-tech-luthando",
+      "requestorName": "Luthando Didiza",
+      "requestorEmail": "luthando.tech@capaciti.org",
+      "department": "Digital Skills Academy",
+      "estimatedCost": 14500,
+      "justification": "Required for running local Docker containers and LLM inference models during candidate workshops.",
+      "riskLevel": "Medium",
+      "status": "PENDING",
+      "requiredRole": "SUPERVISOR",
+      "createdAt": "2026-08-24T08:30:00.000Z",
+      "updatedAt": "2026-08-24T08:30:00.000Z"
+    },
+    {
+      "id": "APR-2026-0824-002",
+      "requestId": "REQ-2026-0824-1001",
+      "ticketTitle": "Production AWS Cloud Staging Environment IAM Escalation",
+      "approvalType": "SECURITY_ACCESS",
+      "requestorId": "user-tech-anathi",
+      "requestorName": "Anathi Dlamini",
+      "requestorEmail": "anathi.tech@capaciti.org",
+      "department": "Identity & Security Ops",
+      "estimatedCost": 0,
+      "justification": "Need elevated IAM credentials to deploy security patch on cloud database cluster.",
+      "riskLevel": "Critical",
+      "status": "PENDING",
+      "requiredRole": "ADMIN",
+      "createdAt": "2026-08-24T09:10:00.000Z",
+      "updatedAt": "2026-08-24T09:10:00.000Z"
+    },
+    {
+      "id": "APR-2026-0823-003",
+      "requestId": "REQ-2026-0823-2001",
+      "ticketTitle": "Enterprise GitHub & Figma Organization Licensing Renewal",
+      "approvalType": "BUDGET_EXPENSE",
+      "requestorId": "user-emp-bongani",
+      "requestorName": "Bongani Sithole",
+      "requestorEmail": "bongani.sithole@capaciti.org",
+      "department": "Finance & Accounting",
+      "estimatedCost": 28000,
+      "justification": "Annual seat renewal for 45 learners in digital software development cohort.",
+      "riskLevel": "Low",
+      "status": "APPROVED",
+      "requiredRole": "SUPERVISOR",
+      "decidedByUserId": "user-manager-naledi",
+      "decidedByName": "Naledi Khumalo",
+      "decisionNotes": "Approved in line with Q3 Software & Learning Operations Budget.",
+      "decidedAt": "2026-08-23T14:00:00.000Z",
+      "createdAt": "2026-08-23T11:00:00.000Z",
+      "updatedAt": "2026-08-23T14:00:00.000Z"
+    },
+    {
+      "id": "APR-2026-0822-004",
+      "requestId": "REQ-2026-0822-3001",
+      "ticketTitle": "Remote Access VPN Policy Exception for Travelling Candidate",
+      "approvalType": "POLICY_EXCEPTION",
+      "requestorId": "user-cust-mbali",
+      "requestorName": "Mbali Entle Mpendu",
+      "requestorEmail": "mbalientlempendu02@gmail.com",
+      "department": "Digital Skills Academy / Cohort 24",
+      "estimatedCost": 0,
+      "justification": "Accessing virtual learning portal while attending regional STEM hackathon in Durban.",
+      "riskLevel": "Medium",
+      "status": "APPROVED",
+      "requiredRole": "SUPERVISOR",
+      "decidedByUserId": "user-global-admin",
+      "decidedByName": "Global Administrator",
+      "decisionNotes": "Temporary VPN access granted with 7-day MFA expiry.",
+      "decidedAt": "2026-08-22T16:30:00.000Z",
+      "createdAt": "2026-08-22T10:00:00.000Z",
+      "updatedAt": "2026-08-22T16:30:00.000Z"
+    },
+    {
+      "id": "APR-2026-0821-005",
+      "requestId": "REQ-2026-0821-4001",
+      "ticketTitle": "Suspended Okta SSO Account Reactivation Request",
+      "approvalType": "ACCOUNT_UNBLOCK",
+      "requestorId": "user-emp-kagiso",
+      "requestorName": "Kagiso Mokoena",
+      "requestorEmail": "kagiso.mokoena@capaciti.org",
+      "department": "Human Resources",
+      "estimatedCost": 0,
+      "justification": "Failed multiple biometric attempts following device replacement.",
+      "riskLevel": "High",
+      "status": "REJECTED",
+      "requiredRole": "ADMIN",
+      "decidedByUserId": "user-global-admin",
+      "decidedByName": "Global Administrator",
+      "decisionNotes": "Rejected pending identity verification via physical HR check and direct manager sign-off.",
+      "decidedAt": "2026-08-21T15:20:00.000Z",
+      "createdAt": "2026-08-21T13:00:00.000Z",
+      "updatedAt": "2026-08-21T15:20:00.000Z"
+    }
+  ],
+  "hitlOverrides": [
+    {
+      "id": "hitl-001",
+      "ticketId": "REQ-2026-0824-1002",
+      "ticketTitle": "Hardware Upgrade: Workstation Display",
+      "originalCategory": "IT Support",
+      "correctedCategory": "Hardware & Assets",
+      "originalPriority": "Low",
+      "correctedPriority": "Medium",
+      "overriddenBy": "Naledi Khumalo (Supervisor)",
+      "reason": "Asset requisition requires asset tracking registry and formal equipment gate.",
+      "timestamp": "2026-08-24T09:00:00.000Z"
+    },
+    {
+      "id": "hitl-002",
+      "ticketId": "REQ-2026-0823-2001",
+      "ticketTitle": "GitHub & Figma Organization Licensing",
+      "originalCategory": "General Inquiry",
+      "correctedCategory": "Software & SaaS",
+      "originalPriority": "Medium",
+      "correctedPriority": "High",
+      "overriddenBy": "Global Administrator",
+      "reason": "License renewal affects 45 learners; elevated to High priority.",
+      "timestamp": "2026-08-23T11:30:00.000Z"
+    },
+    {
+      "id": "hitl-003",
+      "ticketId": "REQ-2026-0822-3001",
+      "ticketTitle": "VPN Policy Exception",
+      "originalCategory": "IT Support",
+      "correctedCategory": "Network & Cloud",
+      "originalPriority": "Low",
+      "correctedPriority": "Medium",
+      "overriddenBy": "Naledi Khumalo (Supervisor)",
+      "reason": "Security and firewall rule adjustment needed for remote endpoint.",
+      "timestamp": "2026-08-22T10:15:00.000Z"
+    }
+  ],
+  "piiAudits": [
+    {
+      "id": "pii-audit-001",
+      "ticketId": "REQ-2026-0824-1003",
+      "piiTypesDetected": [
+        "South African National ID (13 digits)",
+        "Contact Mobile Number"
+      ],
+      "originalSampleMasked": "Candidate ID 9405125089*** submitted with mobile +27 82 *** 4912",
+      "actionTaken": "Auto-Redacted",
+      "timestamp": "2026-08-24T10:12:00.000Z"
+    },
+    {
+      "id": "pii-audit-002",
+      "ticketId": "REQ-2026-0823-2004",
+      "piiTypesDetected": [
+        "Banking Account Details / Branch Code"
+      ],
+      "originalSampleMasked": "Account: 6289******* Branch: 250*** Standard Bank",
+      "actionTaken": "Auto-Redacted",
+      "timestamp": "2026-08-23T14:45:00.000Z"
+    },
+    {
+      "id": "pii-audit-003",
+      "ticketId": "REQ-2026-0821-4001",
+      "piiTypesDetected": [
+        "Cleartext Temporary Credentials / Password"
+      ],
+      "originalSampleMasked": "Passphrase temp: [PROTECTED_CREDENTIAL_MASKED]",
+      "actionTaken": "Auto-Redacted",
+      "timestamp": "2026-08-21T13:02:00.000Z"
+    }
+  ],
+  "dsarRequests": [
+    {
+      "id": "dsar-2026-001",
+      "userEmail": "mbalientlempendu02@gmail.com",
+      "userName": "Mbali Entle Mpendu",
+      "requestType": "EXPORT_DATA",
+      "status": "COMPLETED",
+      "submittedAt": "2026-08-22T08:00:00.000Z",
+      "completedAt": "2026-08-22T08:05:00.000Z",
+      "downloadUrl": "/api/compliance/dsar/dsar-2026-001/download"
+    },
+    {
+      "id": "dsar-2026-002",
+      "userEmail": "kagiso.mokoena@capaciti.org",
+      "userName": "Kagiso Mokoena",
+      "requestType": "RESTRICT_PROCESSING",
+      "status": "COMPLETED",
+      "submittedAt": "2026-08-20T10:30:00.000Z",
+      "completedAt": "2026-08-20T10:32:00.000Z"
+    }
+  ],
+  "compliancePolicies": [
+    {
+      "id": "pol-001",
+      "name": "POPIA Personal Information Retention & Anonymization",
+      "category": "POPIA",
+      "retentionPeriod": "12 Months",
+      "enforcementStatus": "Active",
+      "description": "Automatically mask candidate personal identification data upon ticket closure after 90 days.",
+      "recordsCovered": 450,
+      "lastEnforced": "2026-08-24T00:00:00.000Z"
+    },
+    {
+      "id": "pol-002",
+      "name": "Immutable Audit Log Preservation Policy",
+      "category": "Access Control",
+      "retentionPeriod": "5 Years",
+      "enforcementStatus": "Enforced",
+      "description": "Enforces cryptographically verifiable, append-only logs for all administrator and supervisor actions.",
+      "recordsCovered": 1280,
+      "lastEnforced": "2026-08-24T00:00:00.000Z"
+    },
+    {
+      "id": "pol-003",
+      "name": "GDPR Right to Erasure & Data Portability Protocol",
+      "category": "GDPR",
+      "retentionPeriod": "On-Demand (30 Days SLA)",
+      "enforcementStatus": "Active",
+      "description": "Automated DSAR pipeline supporting instant JSON/CSV export and cryptographically scrubbed anonymization.",
+      "recordsCovered": 24,
+      "lastEnforced": "2026-08-23T00:00:00.000Z"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <!-- Background -->
+  <rect width="200" height="200" rx="40" fill="#1c244b" />
+  
+  <defs>
+    <clipPath id="circle-clip">
+      <circle cx="100" cy="100" r="80" />
+    </clipPath>
+  </defs>
+
+  <g clip-path="url(#circle-clip)">
+    <!-- Right Quadrant (Coral Red) -->
+    <g stroke="#f05046" stroke-width="12.5" fill="none" stroke-linejoin="miter" stroke-miterlimit="10">
+      <path d="M 190 10 L 118 100 L 190 190" />
+      <path d="M 215 10 L 143 100 L 215 190" />
+      <path d="M 240 10 L 168 100 L 240 190" />
+    </g>
+
+    <!-- Top Quadrant (White) -->
+    <g stroke="#ffffff" stroke-width="12.5" fill="none" stroke-linejoin="miter" stroke-miterlimit="10">
+      <path d="M 10 10 L 100 82 L 190 10" />
+      <path d="M 10 -15 L 100 57 L 190 -15" />
+      <path d="M 10 -40 L 100 32 L 190 -40" />
+    </g>
+
+    <!-- Left Quadrant (White) -->
+    <g stroke="#ffffff" stroke-width="12.5" fill="none" stroke-linejoin="miter" stroke-miterlimit="10">
+      <path d="M 10 10 L 82 100 L 10 190" />
+      <path d="M -15 10 L 57 100 L -15 190" />
+      <path d="M -40 10 L 32 100 L -40 190" />
+    </g>
+
+    <!-- Bottom Quadrant (White) -->
+    <g stroke="#ffffff" stroke-width="12.5" fill="none" stroke-linejoin="miter" stroke-miterlimit="10">
+      <path d="M 10 190 L 100 118 L 190 190" />
+      <path d="M 10 215 L 100 143 L 190 215" />
+      <path d="M 10 240 L 100 168 L 190 240" />
+    </g>
+
+    <!-- 4 Diagonal Dividers with navy background color -->
+    <line x1="20" y1="20" x2="180" y2="180" stroke="#1c244b" stroke-width="7" />
+    <line x1="180" y1="20" x2="20" y2="180" stroke="#1c244b" stroke-width="7" />
+
+    <!-- Center Square -->
+    <rect x="85" y="85" width="30" height="30" fill="#1c244b" />
+  </g>
+</svg>

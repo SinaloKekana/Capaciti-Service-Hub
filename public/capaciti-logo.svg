@@ -1,0 +1,44 @@
+<svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="200" rx="24" fill="#1d2342" />
+  <g id="capaciti-emblem">
+    <mask id="circleMask">
+      <circle cx="100" cy="100" r="82" fill="#ffffff" />
+    </mask>
+    <g mask="url(#circleMask)">
+      <!-- Right Quadrant (Coral Red) -->
+      <g stroke="#f05046" stroke-width="11.5" stroke-linejoin="miter" stroke-miterlimit="10">
+        <path d="M 195 23 L 118 100 L 195 177" />
+        <path d="M 219 23 L 142 100 L 219 177" />
+        <path d="M 243 23 L 166 100 L 243 177" />
+      </g>
+
+      <!-- Top Quadrant (White) -->
+      <g stroke="#ffffff" stroke-width="11.5" stroke-linejoin="miter" stroke-miterlimit="10">
+        <path d="M 23 5 L 100 82 L 177 5" />
+        <path d="M 23 -19 L 100 58 L 177 -19" />
+        <path d="M 23 -43 L 100 34 L 177 -43" />
+      </g>
+
+      <!-- Left Quadrant (White) -->
+      <g stroke="#ffffff" stroke-width="11.5" stroke-linejoin="miter" stroke-miterlimit="10">
+        <path d="M 5 23 L 82 100 L 5 177" />
+        <path d="M -19 23 L 58 100 L -19 177" />
+        <path d="M -43 23 L 34 100 L -43 177" />
+      </g>
+
+      <!-- Bottom Quadrant (White) -->
+      <g stroke="#ffffff" stroke-width="11.5" stroke-linejoin="miter" stroke-miterlimit="10">
+        <path d="M 23 195 L 100 118 L 177 195" />
+        <path d="M 23 219 L 100 142 L 177 219" />
+        <path d="M 23 243 L 100 166 L 177 243" />
+      </g>
+
+      <!-- 4 Diagonal Dividers with navy background color -->
+      <line x1="10" y1="10" x2="190" y2="190" stroke="#1d2342" stroke-width="6.5" />
+      <line x1="190" y1="10" x2="10" y2="190" stroke="#1d2342" stroke-width="6.5" />
+
+      <!-- Center Square Mask -->
+      <rect x="88" y="88" width="24" height="24" fill="#1d2342" />
+    </g>
+  </g>
+</svg>
