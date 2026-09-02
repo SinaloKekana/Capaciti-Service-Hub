@@ -81,10 +81,10 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
 export const api = {
   // Auth
-  register: async (name: string, email: string, password: string, role: string = 'CUSTOMER') => {
+  register: async (name: string, email: string, password: string) => {
     const data = await apiFetch('/api/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, email, password }),
     });
     if (data.token) setStoredToken(data.token);
     return data;
@@ -256,6 +256,20 @@ export const api = {
   getUsers: async (): Promise<User[]> => {
     const data = await apiFetch('/api/admin/users');
     return data.users;
+  },
+
+  createAdminUser: async (userData: {
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+    department?: string;
+  }): Promise<{ user: User; message: string }> => {
+    const data = await apiFetch('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    });
+    return data;
   },
 
   updateUserRole: async (userId: string, role: string): Promise<User> => {

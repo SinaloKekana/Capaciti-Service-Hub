@@ -7,7 +7,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   onLogin: (email: string, password: string) => Promise<void>;
-  onRegister: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+  onRegister: (name: string, email: string, password: string) => Promise<void>;
   onQuickDemoLogin?: (email: string, role: string) => void;
   initialMode?: 'login' | 'register';
 }
@@ -23,7 +23,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<UserRole>('CUSTOMER');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +42,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       if (mode === 'login') {
         await onLogin(email, password);
       } else {
-        await onRegister(name, email, password, role);
+        await onRegister(name, email, password);
       }
       onClose();
     } catch (err: any) {
@@ -109,7 +108,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {mode === 'login' ? (
             <p>Log in with your credentials to access your ticket dashboard.</p>
           ) : (
-            <p>Register a new account as an <strong className="text-slate-800">End User</strong> or <strong className="text-slate-800">Technician</strong>.</p>
+            <p>Create your account. All new accounts automatically start as standard <strong className="text-slate-800 font-semibold">End Users</strong>.</p>
           )}
         </div>
 
@@ -168,17 +167,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </div>
 
           {mode === 'register' && (
-            <div>
-              <label className="block text-slate-700 font-bold mb-1">Account Role</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-slate-900 font-semibold focus:outline-none focus:border-sky-500 text-xs focus:bg-white"
-              >
-                <option value="CUSTOMER">End User / Learner — Submitting and tracking requests</option>
-                <option value="EMPLOYEE">Internal Staff — Departmental requests & collaboration</option>
-                <option value="TECHNICIAN">Service Desk Technician — Resolving assigned tickets</option>
-              </select>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-slate-700 flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
+                  <span>Assigned Role</span>
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
+                  End User (Default)
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500 leading-normal">
+                New accounts automatically start with standard End User access (submitting and tracking tickets). Only <strong>System Administrators</strong> can assign or elevate roles (Technician, Department Manager, Supervisor, Admin).
+              </p>
             </div>
           )}
 

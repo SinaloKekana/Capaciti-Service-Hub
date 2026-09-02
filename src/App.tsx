@@ -107,8 +107,8 @@ export default function App() {
     await refreshAppData();
   };
 
-  const handleRegister = async (name: string, email: string, pass: string, role: UserRole) => {
-    const data = await api.register(name, email, pass, role);
+  const handleRegister = async (name: string, email: string, pass: string) => {
+    const data = await api.register(name, email, pass);
     setUser(data.user);
     const isManagerOrAdmin = data.user.role === 'ADMIN' || data.user.role === 'SUPERVISOR';
     setActiveTab(isManagerOrAdmin ? 'dashboard' : 'requests');

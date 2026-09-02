@@ -204,18 +204,15 @@ export const AdminStaffAuditView: React.FC<AdminStaffAuditViewProps> = ({ curren
 
     setIsCreatingUser(true);
     try {
-      const res = await api.register(
-        newUserName.trim(),
-        newUserEmail.trim().toLowerCase(),
-        newUserPassword,
-        newUserRole
-      );
+      await api.createAdminUser({
+        name: newUserName.trim(),
+        email: newUserEmail.trim().toLowerCase(),
+        password: newUserPassword,
+        role: newUserRole,
+        department: newUserDept,
+      });
 
-      if (res.user && newUserDept) {
-        await api.updateUser(res.user.id, { department: newUserDept });
-      }
-
-      showToast(`New user ${newUserName} created successfully.`);
+      showToast(`User ${newUserName} created with role ${newUserRole}.`);
       setShowAddUserModal(false);
       setNewUserName('');
       setNewUserEmail('');
@@ -643,6 +640,33 @@ export const AdminStaffAuditView: React.FC<AdminStaffAuditViewProps> = ({ curren
       {/* VIEW TAB 2: ALL USERS TABLE VIEW */}
       {viewTab === 'users' && (
         <div className="space-y-4 animate-in fade-in duration-200">
+          {/* Role Governance & Security Policy Notice */}
+          <div className="bg-sky-50/80 border border-sky-200/80 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start sm:items-center space-x-3">
+              <div className="w-8 h-8 rounded-xl bg-sky-100 text-sky-700 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-sky-950 flex items-center space-x-2">
+                  <span>Default Account Role: End User</span>
+                  <span className="text-[10px] uppercase tracking-wider font-extrabold bg-sky-200/80 text-sky-800 px-2 py-0.5 rounded-md">
+                    Enforced
+                  </span>
+                </div>
+                <p className="text-slate-600 text-[11px] mt-0.5">
+                  All self-registered accounts are automatically assigned as standard <strong>End Users</strong>. Only <strong>Administrators</strong> have authority to assign, elevate, or revoke operational roles (Technician, Supervisor, Department Manager, Administrator).
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowAddUserModal(true)}
+              className="self-start sm:self-auto shrink-0 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#0284c7] hover:bg-[#0369a1] text-white font-semibold text-xs transition-colors shadow-2xs cursor-pointer"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              <span>Provision User</span>
+            </button>
+          </div>
+
           {/* Filter and Search Bar */}
           <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">

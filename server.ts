@@ -67,7 +67,7 @@ async function startServer() {
   // --- AUTHENTICATION APIS ---
   app.post('/api/auth/register', (req, res) => {
     try {
-      const { name, email, password, role } = req.body || {};
+      const { name, email, password } = req.body || {};
       const cleanName = (name || '').trim();
       const cleanEmail = (email || '').trim().toLowerCase();
       const cleanPass = (password || '').trim();
@@ -89,21 +89,27 @@ async function startServer() {
         return res.status(409).json({ error: 'An account with this email address already exists. Please log in instead.' });
       }
 
-      // Allow CUSTOMER, EMPLOYEE, or TECHNICIAN during registration
-      let assignedRole: UserRole = 'CUSTOMER';
-      if (role === 'EMPLOYEE' || role === 'TECHNICIAN') {
-        assignedRole = role;
-      }
+      // STRICT ROLE ENFORCEMENT: Every new account created via public registration
+      // automatically starts with the default 'CUSTOMER' (End User) role.
+      // Only Administrators can assign or elevate user roles.
+      const assignedRole: UserRole = 'CUSTOMER';
 
       const newUser = db.createUser({
         name: cleanName,
         email: cleanEmail,
         password: cleanPass,
         role: assignedRole,
-        department: assignedRole === 'TECHNICIAN' ? 'IT Support & Systems' : (assignedRole === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy'),
+        department: 'Digital Skills Academy',
       });
 
-      db.addAuditLog(newUser.id, newUser.email, 'REGISTER', 'USER', newUser.id, `User registered with role ${newUser.role}`);
+      db.addAuditLog(
+        newUser.id, 
+        newUser.email, 
+        'REGISTER', 
+        'USER', 
+        newUser.id, 
+        `New account created. Automatically assigned default role: End User (${newUser.role})`
+      );
 
       const token = Buffer.from(newUser.id).toString('base64');
       return res.status(201).json({ user: newUser, token });
@@ -715,6 +721,73 @@ async function startServer() {
       return res.status(403).json({ error: 'Admin authorization required' });
     }
     return res.json({ users: db.getUsers() });
+  });
+
+  // Administrator endpoint to create accounts with pre-assigned roles & departments
+  app.post('/api/admin/users', (req, res) => {
+    const user = getUserFromReq(req);
+    if (!user || user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Only Administrators have permission to provision accounts with assigned roles' });
+    }
+
+    try {
+      const { name, email, password, role, department } = req.body || {};
+      const cleanName = (name || '').trim();
+      const cleanEmail = (email || '').trim().toLowerCase();
+      const cleanPass = (password || '').trim();
+
+      if (!cleanName || !cleanEmail || !cleanPass) {
+        return res.status(400).json({ error: 'Name, email, and password are required' });
+      }
+
+      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        return res.status(400).json({ error: 'Please provide a valid email address' });
+      }
+
+      if (cleanPass.length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+      }
+
+      const existing = db.findUserByEmail(cleanEmail);
+      if (existing) {
+        return res.status(409).json({ error: 'An account with this email address already exists.' });
+      }
+
+      const allowedRoles = [
+        'CUSTOMER', 
+        'EMPLOYEE', 
+        'TECHNICIAN', 
+        'SUPERVISOR', 
+        'HR_MANAGER', 
+        'FINANCE_MANAGER', 
+        'IT_MANAGER', 
+        'FACILITIES_MANAGER', 
+        'ADMIN'
+      ];
+      const targetRole = allowedRoles.includes(role) ? (role as UserRole) : 'CUSTOMER';
+
+      const newUser = db.createUser({
+        name: cleanName,
+        email: cleanEmail,
+        password: cleanPass,
+        role: targetRole,
+        department: department || (targetRole === 'CUSTOMER' ? 'Digital Skills Academy' : 'IT Operations'),
+      });
+
+      db.addAuditLog(
+        user.id, 
+        user.email, 
+        'ADMIN_CREATE_USER', 
+        'USER', 
+        newUser.id, 
+        `Administrator ${user.name} created user account for ${newUser.name} (${newUser.email}) with role: ${newUser.role} in ${newUser.department}`
+      );
+
+      return res.status(201).json({ user: newUser, message: 'User account created successfully' });
+    } catch (err: any) {
+      console.error('Admin create user error:', err);
+      return res.status(500).json({ error: 'Failed to create user account' });
+    }
   });
 
   app.patch('/api/admin/users/:id/role', (req, res) => {
