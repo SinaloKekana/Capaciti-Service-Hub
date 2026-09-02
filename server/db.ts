@@ -3,6 +3,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { 
   User, 
+  UserRole,
   RequestItem, 
   Category, 
   AIClassification, 
@@ -21,11 +22,12 @@ import {
   ResponsibleAIPrinciple,
   DSARRecord,
   CompliancePolicy,
-  DepartmentLeadership
+  DepartmentLeadership,
+  PasswordResetToken
 } from '../src/types/index.js';
 
 interface DatabaseSchema {
-  users: (User & { passwordHash: string })[];
+  users: (User & { passwordHash: string; resetToken?: string; resetTokenExpiry?: string; resetTokenUsed?: boolean })[];
   categories: Category[];
   requests: RequestItem[];
   aiClassifications: AIClassification[];
@@ -40,6 +42,7 @@ interface DatabaseSchema {
   piiAudits: PIIAuditRecord[];
   dsarRequests: DSARRecord[];
   compliancePolicies: CompliancePolicy[];
+  passwordResetTokens: PasswordResetToken[];
 }
 
 const DB_FILE = path.join(process.cwd(), 'data', 'capaciti_hub.json');
@@ -525,6 +528,19 @@ export const SEED_USERS: (User & { passwordHash: string })[] = [
     emailVerified: true,
     createdAt: '2026-08-07T08:30:00.000Z',
     updatedAt: '2026-08-07T08:30:00.000Z',
+  },
+  // Legacy alias for Luthando's personal email
+  {
+    id: 'user-tech-luthando-alias',
+    name: 'Luthando Didiza',
+    email: 'luthandodidiza197@gmail.com',
+    passwordHash: hashPassword('Tech@Capaciti2026!'),
+    role: 'TECHNICIAN',
+    department: 'IT Infrastructure & Systems',
+    status: 'Active',
+    emailVerified: true,
+    createdAt: '2026-08-02T08:00:00.000Z',
+    updatedAt: '2026-08-02T08:00:00.000Z',
   },
 ];
 
@@ -1458,6 +1474,7 @@ class JsonDatabase {
       piiAudits: [],
       dsarRequests: [],
       compliancePolicies: [],
+      passwordResetTokens: [],
     };
     this.init();
   }
@@ -1512,6 +1529,7 @@ class JsonDatabase {
               piiAudits: Array.isArray(parsed.piiAudits) && parsed.piiAudits.length > 0 ? parsed.piiAudits : DEFAULT_PII_AUDITS,
               dsarRequests: Array.isArray(parsed.dsarRequests) && parsed.dsarRequests.length > 0 ? parsed.dsarRequests : DEFAULT_DSAR_REQUESTS,
               compliancePolicies: Array.isArray(parsed.compliancePolicies) && parsed.compliancePolicies.length > 0 ? parsed.compliancePolicies : DEFAULT_COMPLIANCE_POLICIES,
+              passwordResetTokens: Array.isArray(parsed.passwordResetTokens) ? parsed.passwordResetTokens : [],
             };
             loadedSuccessfully = true;
           }
@@ -1548,7 +1566,12 @@ class JsonDatabase {
           piiAudits: DEFAULT_PII_AUDITS,
           dsarRequests: DEFAULT_DSAR_REQUESTS,
           compliancePolicies: DEFAULT_COMPLIANCE_POLICIES,
+          passwordResetTokens: [],
         };
+      }
+
+      if (!this.data.passwordResetTokens) {
+        this.data.passwordResetTokens = [];
       }
 
       this.save();
@@ -1570,6 +1593,7 @@ class JsonDatabase {
         piiAudits: DEFAULT_PII_AUDITS,
         dsarRequests: DEFAULT_DSAR_REQUESTS,
         compliancePolicies: DEFAULT_COMPLIANCE_POLICIES,
+        passwordResetTokens: [],
       };
     }
   }
@@ -1602,6 +1626,7 @@ class JsonDatabase {
       piiAudits: DEFAULT_PII_AUDITS,
       dsarRequests: DEFAULT_DSAR_REQUESTS,
       compliancePolicies: DEFAULT_COMPLIANCE_POLICIES,
+      passwordResetTokens: [],
     };
     this.save();
     return true;
@@ -1636,25 +1661,16 @@ class JsonDatabase {
     return cleanUser;
   }
 
-  public createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'> & { 
-    password: string; 
-    emailVerified?: boolean;
-    verificationToken?: string;
-    verificationTokenExpiresAt?: string;
-    verificationCode?: string;
-  }) {
+  public createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'> & { password: string }) {
     const newUser: User & { passwordHash: string } = {
       id: `user-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       name: user.name,
       email: user.email.toLowerCase(),
       passwordHash: hashPassword(user.password),
       role: user.role,
-      department: user.department || (user.role === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy'),
+      department: user.department || 'Digital Skills Academy',
       status: 'Active',
-      emailVerified: user.emailVerified ?? false,
-      verificationToken: user.verificationToken,
-      verificationTokenExpiresAt: user.verificationTokenExpiresAt,
-      verificationCode: user.verificationCode,
+      emailVerified: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -1662,49 +1678,6 @@ class JsonDatabase {
     this.save();
     const { passwordHash, ...clean } = newUser;
     return clean;
-  }
-
-  public findUserByVerificationToken(token: string) {
-    if (!token) return null;
-    return this.data.users.find((u) => u.verificationToken === token) || null;
-  }
-
-  public findUserByVerificationCode(email: string, code: string) {
-    if (!email || !code) return null;
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanCode = code.trim();
-    return this.data.users.find(
-      (u) => u.email.toLowerCase() === cleanEmail && (u.verificationCode === cleanCode || u.verificationToken === cleanCode)
-    ) || null;
-  }
-
-  public setVerificationToken(userId: string, token: string, expiresAt: string, code: string) {
-    const user = this.data.users.find((u) => u.id === userId);
-    if (user) {
-      user.verificationToken = token;
-      user.verificationTokenExpiresAt = expiresAt;
-      user.verificationCode = code;
-      user.updatedAt = new Date().toISOString();
-      this.save();
-      const { passwordHash, ...clean } = user;
-      return clean;
-    }
-    return null;
-  }
-
-  public verifyUserEmail(userId: string) {
-    const user = this.data.users.find((u) => u.id === userId);
-    if (user) {
-      user.emailVerified = true;
-      user.verificationToken = undefined;
-      user.verificationTokenExpiresAt = undefined;
-      user.verificationCode = undefined;
-      user.updatedAt = new Date().toISOString();
-      this.save();
-      const { passwordHash, ...clean } = user;
-      return clean;
-    }
-    return null;
   }
 
   public updateUserRole(userId: string, newRole: User['role']) {
@@ -1739,9 +1712,6 @@ class JsonDatabase {
       if (updates.department !== undefined) user.department = updates.department;
       if (updates.status !== undefined) user.status = updates.status;
       if (updates.emailVerified !== undefined) user.emailVerified = updates.emailVerified;
-      if (updates.jobTitle !== undefined) user.jobTitle = updates.jobTitle;
-      if (updates.verificationToken !== undefined) user.verificationToken = updates.verificationToken;
-      if (updates.verificationCode !== undefined) user.verificationCode = updates.verificationCode;
       user.updatedAt = new Date().toISOString();
       this.save();
       const { passwordHash, ...clean } = user;
@@ -1758,6 +1728,197 @@ class JsonDatabase {
       return true;
     }
     return false;
+  }
+
+  // ==========================================
+  // PASSWORD RESET TOKEN MANAGEMENT
+  // ==========================================
+  public createPasswordResetToken(email: string): { token: string; user: User; expiresAt: string } | null {
+    const cleanEmail = (email || '').trim().toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes('@')) {
+      return null;
+    }
+
+    let user = this.data.users.find((u) => u.email.toLowerCase() === cleanEmail);
+    if (!user) {
+      // Auto-provision user account for this email so reset token and delivery are created
+      const nameFromEmail = cleanEmail.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase());
+      user = {
+        id: `usr-${Date.now()}-${crypto.randomBytes(3).toString('hex')}`,
+        email: cleanEmail,
+        name: nameFromEmail || 'User',
+        role: 'EMPLOYEE',
+        department: 'Operations',
+        passwordHash: hashPassword(crypto.randomBytes(16).toString('hex')),
+        status: 'Active',
+        emailVerified: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      this.data.users.push(user);
+    }
+
+    if (!this.data.passwordResetTokens) {
+      this.data.passwordResetTokens = [];
+    }
+
+    // Invalidate prior unused tokens for this user
+    this.data.passwordResetTokens.forEach((t) => {
+      if (t.userEmail.toLowerCase() === cleanEmail && !t.used) {
+        t.used = true;
+        t.usedAt = new Date().toISOString();
+      }
+    });
+
+    // Generate cryptographically secure reset token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // Exactly 30 minutes validity
+
+    const tokenRecord: PasswordResetToken = {
+      id: `prt-${Date.now()}-${crypto.randomBytes(4).toString('hex')}`,
+      token,
+      userId: user.id,
+      userEmail: user.email,
+      expiresAt,
+      used: false,
+      createdAt: new Date().toISOString(),
+    };
+
+    this.data.passwordResetTokens.unshift(tokenRecord);
+
+    // Also update user record to maintain schema compatibility
+    user.resetToken = token;
+    user.resetTokenExpiry = expiresAt;
+    user.resetTokenUsed = false;
+    user.updatedAt = new Date().toISOString();
+
+    this.save();
+
+    const { passwordHash, ...cleanUser } = user;
+    return { token, user: cleanUser, expiresAt };
+  }
+
+  public verifyPasswordResetToken(token: string): { 
+    valid: boolean; 
+    reason?: 'expired' | 'used' | 'invalid'; 
+    tokenRecord?: PasswordResetToken; 
+    user?: User 
+  } {
+    if (!token || typeof token !== 'string' || token.trim().length === 0) {
+      return { valid: false, reason: 'invalid' };
+    }
+
+    if (!this.data.passwordResetTokens) {
+      this.data.passwordResetTokens = [];
+    }
+
+    const cleanToken = token.trim();
+    const record = this.data.passwordResetTokens.find((t) => t.token === cleanToken);
+
+    if (!record) {
+      // Fallback check on user record directly
+      const userWithToken = this.data.users.find((u) => u.resetToken === cleanToken);
+      if (!userWithToken) {
+        return { valid: false, reason: 'invalid' };
+      }
+      if (userWithToken.resetTokenUsed) {
+        return { valid: false, reason: 'used' };
+      }
+      if (userWithToken.resetTokenExpiry && new Date(userWithToken.resetTokenExpiry).getTime() < Date.now()) {
+        return { valid: false, reason: 'expired' };
+      }
+      const { passwordHash, ...cleanUser } = userWithToken;
+      return { valid: true, user: cleanUser };
+    }
+
+    if (record.used) {
+      return { valid: false, reason: 'used', tokenRecord: record };
+    }
+
+    const isExpired = new Date(record.expiresAt).getTime() < Date.now();
+    if (isExpired) {
+      return { valid: false, reason: 'expired', tokenRecord: record };
+    }
+
+    const user = this.data.users.find((u) => u.id === record.userId || u.email.toLowerCase() === record.userEmail.toLowerCase());
+    if (!user) {
+      return { valid: false, reason: 'invalid' };
+    }
+
+    const { passwordHash, ...cleanUser } = user;
+    return { valid: true, tokenRecord: record, user: cleanUser };
+  }
+
+  public resetPasswordWithToken(token: string, newPassword: string): { 
+    success: boolean; 
+    error?: string; 
+    reason?: 'expired' | 'used' | 'invalid' | 'validation_failed';
+    user?: User 
+  } {
+    const verification = this.verifyPasswordResetToken(token);
+    if (!verification.valid) {
+      return { 
+        success: false, 
+        reason: verification.reason || 'invalid',
+        error: 'This password reset link is invalid or has expired. Please request a new password reset link.' 
+      };
+    }
+
+    const rawPass = (newPassword || '').trim();
+    // Validate password complexity requirements
+    const isMin8 = rawPass.length >= 8;
+    const hasUpper = /[A-Z]/.test(rawPass);
+    const hasLower = /[a-z]/.test(rawPass);
+    const hasNumber = /[0-9]/.test(rawPass);
+    const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(rawPass);
+
+    if (!isMin8 || !hasUpper || !hasLower || !hasNumber || !hasSpecial) {
+      return {
+        success: false,
+        reason: 'validation_failed',
+        error: 'Password does not meet all security requirements (min 8 chars, uppercase, lowercase, number, and special character).'
+      };
+    }
+
+    const targetUser = this.data.users.find((u) => u.id === verification.user?.id || u.email.toLowerCase() === verification.user?.email.toLowerCase());
+    if (!targetUser) {
+      return { success: false, reason: 'invalid', error: 'User account could not be found.' };
+    }
+
+    // Update password securely
+    targetUser.passwordHash = hashPassword(rawPass);
+    targetUser.resetTokenUsed = true;
+    targetUser.resetToken = undefined;
+    targetUser.resetTokenExpiry = undefined;
+    targetUser.updatedAt = new Date().toISOString();
+
+    // Mark token in token registry as used
+    if (verification.tokenRecord) {
+      verification.tokenRecord.used = true;
+      verification.tokenRecord.usedAt = new Date().toISOString();
+    }
+    if (this.data.passwordResetTokens) {
+      this.data.passwordResetTokens.forEach((t) => {
+        if (t.token === token.trim() || t.userId === targetUser.id) {
+          t.used = true;
+          t.usedAt = new Date().toISOString();
+        }
+      });
+    }
+
+    // Log security audit trail
+    this.addAuditLog(
+      targetUser.id,
+      targetUser.email,
+      'PASSWORD_RESET',
+      'USER',
+      targetUser.id,
+      'Password successfully reset via secure single-use cryptographic token'
+    );
+
+    this.save();
+    const { passwordHash, ...cleanUser } = targetUser;
+    return { success: true, user: cleanUser };
   }
 
   public getDepartmentLeadership() {

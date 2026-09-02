@@ -30,12 +30,23 @@ export interface User {
   departmentScope?: string[];
   status?: 'Active' | 'Suspended';
   emailVerified?: boolean;
-  verificationToken?: string;
-  verificationTokenExpiresAt?: string;
-  verificationCode?: string;
+  resetToken?: string;
+  resetTokenExpiry?: string;
+  resetTokenUsed?: boolean;
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface PasswordResetToken {
+  id: string;
+  token: string;
+  userId: string;
+  userEmail: string;
+  expiresAt: string;
+  used: boolean;
+  usedAt?: string;
+  createdAt: string;
 }
 
 export type RequestType = 

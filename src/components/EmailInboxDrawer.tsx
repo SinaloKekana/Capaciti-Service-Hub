@@ -154,6 +154,21 @@ export const EmailInboxDrawer: React.FC<EmailInboxDrawerProps> = ({
                   </div>
                 </div>
 
+                {/* Quick Action for Password Reset Emails */}
+                {selectedEmail.bodyHtml && selectedEmail.bodyHtml.includes('resetToken=') && (
+                  <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
+                    <div className="text-sky-900 font-medium">
+                      🔒 Single-use password reset verification link detected for <strong>{selectedEmail.recipientEmail}</strong>
+                    </div>
+                    <a
+                      href={`/?resetToken=${selectedEmail.bodyHtml.match(/resetToken=([a-f0-9]+)/)?.[1] || ''}`}
+                      className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg font-bold text-xs shadow-xs shrink-0 transition-all text-center"
+                    >
+                      Open Reset Form →
+                    </a>
+                  </div>
+                )}
+
                 <div
                   className="bg-slate-50 text-slate-900 p-4 rounded-lg border border-slate-200 overflow-x-auto text-xs"
                   dangerouslySetInnerHTML={{ __html: selectedEmail.bodyHtml }}

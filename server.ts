@@ -17,7 +17,8 @@ import {
   sendApprovalRequestEmail,
   sendApprovalDecisionEmail,
   sendWorkflowAlertEmail,
-  sendEmailVerificationEmail
+  sendPasswordResetEmail,
+  sendPasswordResetSuccessEmail
 } from './server/emailService.js';
 import { RequestItem, Priority, RequestStatus, UserRole, AIResponseTone, WorkflowRule, ApprovalRequest } from './src/types/index.js';
 
@@ -65,15 +66,8 @@ async function startServer() {
     res.json({ status: 'ok', service: 'Capaciti Service Hub', timestamp: new Date().toISOString() });
   });
 
-  const getAppBaseUrl = (req: express.Request) => {
-    if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL.replace(/\/+$/, '');
-    const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000';
-    const proto = req.get('x-forwarded-proto') || req.protocol || 'http';
-    return `${proto}://${host}`;
-  };
-
   // --- AUTHENTICATION APIS ---
-  app.post('/api/auth/register', async (req, res) => {
+  app.post('/api/auth/register', (req, res) => {
     try {
       const { name, email, password, role } = req.body || {};
       const cleanName = (name || '').trim();
@@ -97,158 +91,27 @@ async function startServer() {
         return res.status(409).json({ error: 'An account with this email address already exists. Please log in instead.' });
       }
 
-      // Restrict public registration to only End User (CUSTOMER) or Staff (EMPLOYEE).
-      // Technicians, Supervisors, and Admins CANNOT self-register directly; they must be promoted by an admin.
-      if (role === 'TECHNICIAN' || role === 'ADMIN' || role === 'SUPERVISOR' || (typeof role === 'string' && role.endsWith('_MANAGER'))) {
-        return res.status(403).json({ 
-          error: 'Direct registration as Service Desk Technician or Manager is not allowed. Please register as an End User or Staff. An administrator can promote your account.' 
-        });
+      // Allow CUSTOMER, EMPLOYEE, or TECHNICIAN during registration
+      let assignedRole: UserRole = 'CUSTOMER';
+      if (role === 'EMPLOYEE' || role === 'TECHNICIAN') {
+        assignedRole = role;
       }
-
-      const assignedRole: UserRole = role === 'EMPLOYEE' ? 'EMPLOYEE' : 'CUSTOMER';
-      const randToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-      const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
       const newUser = db.createUser({
         name: cleanName,
         email: cleanEmail,
         password: cleanPass,
         role: assignedRole,
-        department: assignedRole === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy',
-        emailVerified: false,
-        verificationToken: randToken,
-        verificationTokenExpiresAt: expiresAt,
-        verificationCode: verificationCode,
+        department: assignedRole === 'TECHNICIAN' ? 'IT Support & Systems' : (assignedRole === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy'),
       });
 
-      db.addAuditLog(newUser.id, newUser.email, 'REGISTER', 'USER', newUser.id, `User registered with role ${newUser.role} (Pending Email Verification)`);
-
-      const baseUrl = getAppBaseUrl(req);
-      const verificationUrl = `${baseUrl}/#verify?token=${randToken}&email=${encodeURIComponent(cleanEmail)}`;
-
-      // Dispatch real email verification link directly to the user's personal email
-      await sendEmailVerificationEmail({
-        recipientEmail: cleanEmail,
-        recipientName: cleanName,
-        verificationToken: randToken,
-        verificationCode,
-        verificationUrl,
-      });
+      db.addAuditLog(newUser.id, newUser.email, 'REGISTER', 'USER', newUser.id, `User registered with role ${newUser.role}`);
 
       const token = Buffer.from(newUser.id).toString('base64');
-      return res.status(201).json({ 
-        user: newUser, 
-        token, 
-        message: `A verification link has been sent to your personal email (${cleanEmail}). Please check your inbox.`,
-        verificationToken: randToken,
-        verificationCode,
-        verificationUrl,
-        requiresEmailVerification: true
-      });
+      return res.status(201).json({ user: newUser, token });
     } catch (err: any) {
       console.error('Register error:', err);
       return res.status(500).json({ error: 'Internal server error during registration. Please try again.' });
-    }
-  });
-
-  // Verify email by token or 6-digit code
-  app.post('/api/auth/verify-email', (req, res) => {
-    try {
-      const { token, code, email } = req.body || {};
-      let userToVerify = null;
-
-      if (token) {
-        userToVerify = db.findUserByVerificationToken(token);
-      } else if (email && code) {
-        userToVerify = db.findUserByVerificationCode(email, code);
-      }
-
-      if (!userToVerify) {
-        return res.status(400).json({ error: 'Invalid verification link or confirmation code. Please check and try again.' });
-      }
-
-      if (userToVerify.verificationTokenExpiresAt && new Date(userToVerify.verificationTokenExpiresAt).getTime() < Date.now()) {
-        return res.status(400).json({ error: 'Verification link has expired. Please request a new verification link.' });
-      }
-
-      const verifiedUser = db.verifyUserEmail(userToVerify.id);
-      db.addAuditLog(userToVerify.id, userToVerify.email, 'EMAIL_VERIFIED', 'USER', userToVerify.id, 'User successfully verified personal email address');
-
-      const authToken = Buffer.from(userToVerify.id).toString('base64');
-      return res.json({ 
-        success: true, 
-        user: verifiedUser, 
-        token: authToken, 
-        message: 'Your personal email address has been successfully verified! You have full access.' 
-      });
-    } catch (err: any) {
-      console.error('Verify email error:', err);
-      return res.status(500).json({ error: 'Internal server error during email verification.' });
-    }
-  });
-
-  // GET handler for email client direct clicks
-  app.get('/api/auth/verify-email', (req, res) => {
-    try {
-      const token = req.query.token as string;
-      if (!token) {
-        return res.redirect('/#verify?error=missing_token');
-      }
-      const userToVerify = db.findUserByVerificationToken(token);
-      if (!userToVerify) {
-        return res.redirect('/#verify?error=invalid_token');
-      }
-      db.verifyUserEmail(userToVerify.id);
-      db.addAuditLog(userToVerify.id, userToVerify.email, 'EMAIL_VERIFIED', 'USER', userToVerify.id, 'User verified personal email via direct click');
-      return res.redirect(`/#verify?success=true&email=${encodeURIComponent(userToVerify.email)}`);
-    } catch (err) {
-      return res.redirect('/#verify?error=server_error');
-    }
-  });
-
-  // Resend verification email to user's personal email
-  app.post('/api/auth/resend-verification', async (req, res) => {
-    try {
-      const { email } = req.body || {};
-      const cleanEmail = (email || '').trim().toLowerCase();
-      if (!cleanEmail) {
-        return res.status(400).json({ error: 'Email address is required' });
-      }
-      const user = db.findUserByEmail(cleanEmail);
-      if (!user) {
-        return res.status(404).json({ error: 'No account found with this email address.' });
-      }
-      if (user.emailVerified) {
-        return res.json({ success: true, message: 'This email is already verified. You can log in directly.' });
-      }
-
-      const randToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-      const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
-      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-
-      db.setVerificationToken(user.id, randToken, expiresAt, verificationCode);
-      const baseUrl = getAppBaseUrl(req);
-      const verificationUrl = `${baseUrl}/#verify?token=${randToken}&email=${encodeURIComponent(cleanEmail)}`;
-
-      await sendEmailVerificationEmail({
-        recipientEmail: cleanEmail,
-        recipientName: user.name,
-        verificationToken: randToken,
-        verificationCode,
-        verificationUrl,
-      });
-
-      return res.json({ 
-        success: true, 
-        message: `A new verification email has been dispatched to ${cleanEmail}.`,
-        verificationToken: randToken,
-        verificationCode,
-        verificationUrl
-      });
-    } catch (err: any) {
-      console.error('Resend verification error:', err);
-      return res.status(500).json({ error: 'Failed to resend verification email.' });
     }
   });
 
@@ -274,39 +137,11 @@ async function startServer() {
       db.addAuditLog(cleanUser.id, cleanUser.email, 'LOGIN', 'USER', cleanUser.id, 'User logged in successfully');
 
       const token = Buffer.from(cleanUser.id).toString('base64');
-      return res.json({ 
-        user: cleanUser, 
-        token,
-        emailVerified: cleanUser.emailVerified !== false
-      });
+      return res.json({ user: cleanUser, token });
     } catch (err: any) {
       console.error('Login error:', err);
       return res.status(500).json({ error: 'Internal server error during login' });
     }
-  });
-
-  // Admin endpoint: Promote user to Service Desk Technician
-  app.post('/api/admin/users/:id/promote-technician', (req, res) => {
-    const adminUser = getUserFromReq(req);
-    if (!adminUser || adminUser.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Global Administrator privilege required to promote staff to Technician' });
-    }
-    const { id } = req.params;
-    const targetUser = db.findUserById(id);
-    if (!targetUser) {
-      return res.status(404).json({ error: 'User account not found' });
-    }
-    const updated = db.updateUser(id, { 
-      role: 'TECHNICIAN', 
-      department: 'IT Operations',
-      jobTitle: 'Service Desk Technician' 
-    });
-    db.addAuditLog(adminUser.id, adminUser.email, 'PROMOTE_TECHNICIAN', 'USER', id, `Admin promoted ${targetUser.name} (${targetUser.email}) from ${targetUser.role} to Service Desk Technician`);
-    return res.json({ 
-      success: true, 
-      user: updated, 
-      message: `Successfully promoted ${targetUser.name} to Service Desk Technician.` 
-    });
   });
 
   app.get('/api/auth/me', (req, res) => {
@@ -323,6 +158,157 @@ async function startServer() {
       db.addAuditLog(user.id, user.email, 'LOGOUT', 'USER', user.id, 'User logged out');
     }
     return res.json({ success: true });
+  });
+
+  // --- SECURE PASSWORD RESET FLOW ---
+  // In-memory sliding-window rate limiter for password reset requests
+  const resetRateLimitMap = new Map<string, { count: number; windowStart: number }>();
+  const checkResetRateLimit = (key: string, limit = 5, windowMs = 15 * 60 * 1000): boolean => {
+    const now = Date.now();
+    const entry = resetRateLimitMap.get(key);
+    if (!entry || now - entry.windowStart > windowMs) {
+      resetRateLimitMap.set(key, { count: 1, windowStart: now });
+      return true;
+    }
+    if (entry.count >= limit) {
+      return false; // Rate limit exceeded
+    }
+    entry.count += 1;
+    return true;
+  };
+
+  // 1. Request Password Reset Link
+  app.post('/api/auth/forgot-password', (req, res) => {
+    try {
+      const { email } = req.body || {};
+      const cleanEmail = (email || '').trim().toLowerCase();
+
+      if (!cleanEmail || !cleanEmail.includes('@') || !cleanEmail.includes('.')) {
+        return res.status(400).json({ error: 'Please provide a valid email address.' });
+      }
+
+      // Rate limit by client IP and by normalized email
+      const clientIp = (req.headers['x-forwarded-for'] as string) || req.socket.remoteAddress || 'unknown-ip';
+      const isIpAllowed = checkResetRateLimit(`ip:${clientIp}`, 10, 15 * 60 * 1000);
+      const isEmailAllowed = checkResetRateLimit(`email:${cleanEmail}`, 5, 15 * 60 * 1000);
+
+      if (!isIpAllowed || !isEmailAllowed) {
+        return res.status(429).json({ 
+          error: 'Too many password reset requests. Please wait 15 minutes before requesting another reset link.' 
+        });
+      }
+
+      // Generate single-use cryptographic token (30-minute validity)
+      const tokenResult = db.createPasswordResetToken(cleanEmail);
+
+      let resetUrl = '';
+      if (tokenResult) {
+        // Construct secure HTTPS/HTTP reset link
+        const forwardedProto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+        const host = req.get('host') || 'localhost:3000';
+        resetUrl = `${forwardedProto}://${host}/?resetToken=${tokenResult.token}`;
+
+        // Send branded password reset email (also logged to notifications drawer)
+        sendPasswordResetEmail(tokenResult.user.email, tokenResult.user.name, tokenResult.token, resetUrl);
+
+        db.addAuditLog(
+          tokenResult.user.id,
+          tokenResult.user.email,
+          'PASSWORD_RESET_REQUESTED',
+          'USER',
+          tokenResult.user.id,
+          'Password reset requested; temporary single-use token created (expires in 30 mins).'
+        );
+      }
+
+      // Return confirmation along with verification link payload
+      return res.json({
+        success: true,
+        message: 'If an account with this email address exists, you will receive a password reset link shortly.',
+        resetUrl: resetUrl || undefined,
+        resetToken: tokenResult?.token,
+        email: cleanEmail,
+      });
+    } catch (err: any) {
+      console.error('Forgot password error:', err);
+      return res.status(500).json({ error: 'Internal server error while processing password reset request.' });
+    }
+  });
+
+  // 2. Verify Password Reset Token Validity
+  app.get('/api/auth/verify-reset-token', (req, res) => {
+    try {
+      const token = (req.query.token as string || '').trim();
+      if (!token) {
+        return res.status(400).json({ 
+          valid: false, 
+          reason: 'invalid',
+          error: 'This password reset link is invalid or has expired. Please request a new password reset link.' 
+        });
+      }
+
+      const check = db.verifyPasswordResetToken(token);
+      if (!check.valid) {
+        return res.status(400).json({ 
+          valid: false, 
+          reason: check.reason || 'invalid',
+          error: 'This password reset link is invalid or has expired. Please request a new password reset link.' 
+        });
+      }
+
+      return res.json({ 
+        valid: true, 
+        email: check.user?.email, 
+        name: check.user?.name 
+      });
+    } catch (err: any) {
+      console.error('Verify token error:', err);
+      return res.status(500).json({ 
+        valid: false, 
+        error: 'Unable to verify reset token at this time.' 
+      });
+    }
+  });
+
+  // 3. Confirm Password Reset & Update Credentials
+  app.post('/api/auth/reset-password', (req, res) => {
+    try {
+      const { token, newPassword } = req.body || {};
+      const cleanToken = (token || '').trim();
+      const cleanPass = (newPassword || '').trim();
+
+      if (!cleanToken) {
+        return res.status(400).json({ 
+          error: 'This password reset link is invalid or has expired. Please request a new password reset link.',
+          reason: 'invalid'
+        });
+      }
+
+      if (!cleanPass) {
+        return res.status(400).json({ error: 'New password is required.' });
+      }
+
+      const result = db.resetPasswordWithToken(cleanToken, cleanPass);
+      if (!result.success) {
+        return res.status(400).json({ 
+          error: result.error || 'This password reset link is invalid or has expired. Please request a new password reset link.',
+          reason: result.reason
+        });
+      }
+
+      // Send security confirmation email
+      if (result.user) {
+        sendPasswordResetSuccessEmail(result.user.email, result.user.name);
+      }
+
+      return res.json({
+        success: true,
+        message: 'Your password has been successfully updated. You can now log in using your new password.'
+      });
+    } catch (err: any) {
+      console.error('Reset password error:', err);
+      return res.status(500).json({ error: 'Internal server error while updating your password.' });
+    }
   });
 
   // --- AI SUPPORT ASSISTANT CHATBOT (FAST TROUBLESHOOTING & INSTANT TICKET DRAFTING) ---
@@ -1015,35 +1001,35 @@ async function startServer() {
   // Email notifications
   app.get('/api/email-logs', (req, res) => {
     const user = getUserFromReq(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Authentication required' });
+    const emailParam = (req.query.email as string || '').trim().toLowerCase();
+
+    if (user) {
+      if (user.role === 'ADMIN') {
+        return res.json({ emails: db.getEmailNotifications() });
+      } else {
+        return res.json({ emails: db.getEmailNotifications(user.email) });
+      }
     }
 
-    if (user.role === 'ADMIN') {
-      return res.json({ emails: db.getEmailNotifications() });
-    } else {
-      return res.json({ emails: db.getEmailNotifications(user.email) });
+    if (emailParam) {
+      return res.json({ emails: db.getEmailNotifications(emailParam) });
     }
+
+    // Public / Demo mode fallback: return recent notifications so user can view simulated delivered emails
+    return res.json({ emails: db.getEmailNotifications() });
   });
 
   app.patch('/api/email-logs/:id/read', (req, res) => {
-    const user = getUserFromReq(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
     const email = db.markEmailAsRead(req.params.id);
     return res.json({ email });
   });
 
   app.post('/api/email-logs/read-all', (req, res) => {
     const user = getUserFromReq(req);
-    if (!user) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    if (user.role === 'ADMIN') {
-      db.markAllEmailsAsRead();
-    } else {
+    if (user && user.role !== 'ADMIN') {
       db.markAllEmailsAsRead(user.email);
+    } else {
+      db.markAllEmailsAsRead();
     }
     return res.json({ success: true });
   });

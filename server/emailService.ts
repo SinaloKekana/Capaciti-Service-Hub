@@ -390,159 +390,145 @@ export function sendWorkflowAlertEmail(recipientEmail: string, recipientName: st
   );
 }
 
-// Verification Email to User's Personal Email Address (External Dispatch via EmailJS / Resend / Direct Mailer)
-export async function sendEmailVerificationEmail(params: {
-  recipientEmail: string;
-  recipientName: string;
-  verificationToken: string;
-  verificationCode: string;
-  verificationUrl: string;
-}): Promise<{ success: boolean; provider: string; message: string; details?: any }> {
-  const { recipientEmail, recipientName, verificationToken, verificationCode, verificationUrl } = params;
-  const subject = 'Verify your email address — Capaciti Service Hub';
+// Dispatch real outbound email if external provider API keys are present
+export async function dispatchRealEmailIfConfigured(to: string, subject: string, html: string) {
+  try {
+    if (process.env.RESEND_API_KEY) {
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: process.env.EMAIL_FROM || 'Capaciti Service Hub <onboarding@resend.dev>',
+          to: [to],
+          subject,
+          html,
+        }),
+      });
+      console.log(`[Email] Dispatched email via Resend to ${to}`);
+    } else if (process.env.SENDGRID_API_KEY) {
+      await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: to }] }],
+          from: { email: process.env.EMAIL_FROM || 'noreply@capaciti.org', name: 'Capaciti Service Hub' },
+          subject,
+          content: [{ type: 'text/html', value: html }],
+        }),
+      });
+      console.log(`[Email] Dispatched email via SendGrid to ${to}`);
+    }
+  } catch (err) {
+    console.warn('[Email] External email dispatch skipped or error:', err);
+  }
+}
+
+// Password Reset Email
+export function sendPasswordResetEmail(recipientEmail: string, recipientName: string, resetToken: string, resetUrl: string) {
+  const subject = `🔒 Reset Your Capaciti Service Hub Password`;
 
   const bodyHtml = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background-color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-      <div style="background: linear-gradient(135deg, #0a1c36 0%, #0369a1 100%); padding: 28px 24px; color: #ffffff; text-align: center;">
-        <h1 style="margin: 0 0 6px; font-size: 24px; font-weight: 800; letter-spacing: 0.5px;">CAPACITI</h1>
-        <p style="margin: 0; font-size: 13px; color: #bae6fd; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Service Hub Security</p>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background-color: #ffffff;">
+      <div style="background-color: #0f172a; padding: 24px; color: #ffffff; text-align: left;">
+        <div style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #38bdf8; margin-bottom: 4px;">CAPACITI SERVICE HUB</div>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Password Reset Request</h2>
+        <p style="margin: 4px 0 0; opacity: 0.85; font-size: 13px; color: #94a3b8;">Single-use secure authorization token</p>
       </div>
-
-      <div style="padding: 32px 24px; color: #1e293b; line-height: 1.6;">
-        <h2 style="margin-top: 0; font-size: 18px; font-weight: 700; color: #0f172a;">Welcome to Capaciti Service Hub, ${recipientName}!</h2>
-        <p style="font-size: 14px; color: #475569;">
-          Thank you for registering. To complete your account setup and ensure the security of your service requests, please verify your email address (<strong>${recipientEmail}</strong>).
-        </p>
-
-        <div style="text-align: center; margin: 32px 0;">
-          <a href="${verificationUrl}" target="_blank" style="display: inline-block; background-color: #0284c7; color: #ffffff; font-weight: 700; font-size: 15px; padding: 14px 32px; border-radius: 8px; text-decoration: none; box-shadow: 0 4px 10px rgba(2,132,199,0.35);">
-            Verify Email Address
+      
+      <div style="padding: 28px 24px; color: #334155; line-height: 1.6;">
+        <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Hello ${recipientName || 'User'},</h3>
+        <p style="margin-bottom: 16px;">We received a request to reset your password for your Capaciti Service Hub account (<strong>${recipientEmail}</strong>).</p>
+        
+        <p style="margin-bottom: 24px;">To create a new password, click the secure button below:</p>
+        
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${resetUrl}" style="background-color: #0284c7; color: #ffffff; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);">
+            Reset Password
           </a>
         </div>
-
-        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 18px; margin: 24px 0; text-align: center;">
-          <p style="margin: 0 0 6px; font-size: 11px; text-transform: uppercase; font-weight: 700; color: #64748b; letter-spacing: 0.5px;">
-            Or enter this 6-digit confirmation code in the app:
-          </p>
-          <div style="font-family: 'Courier New', Courier, monospace; font-size: 28px; font-weight: 800; letter-spacing: 6px; color: #0369a1;">
-            ${verificationCode}
-          </div>
+        
+        <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; padding: 14px 16px; border-radius: 6px; margin: 24px 0; font-size: 12px; color: #475569;">
+          <p style="margin: 0 0 6px; font-weight: 700; color: #0f172a;">Important Security Notice:</p>
+          <ul style="margin: 0; padding-left: 18px; line-height: 1.5;">
+            <li>This link is valid for <strong>30 minutes</strong> and will expire automatically.</li>
+            <li>This link is for <strong>one-time use only</strong> and becomes invalid once used.</li>
+            <li>If you did not request this password reset, you can safely ignore this email — your current password remains secure.</li>
+          </ul>
         </div>
 
-        <p style="font-size: 13px; color: #64748b; margin-bottom: 8px;">
-          If the button above does not work, copy and paste the link below into your web browser:
+        <p style="font-size: 12px; color: #64748b; margin-top: 20px;">
+          If the button above does not work, copy and paste this link into your browser:
         </p>
-        <p style="font-size: 12px; color: #0284c7; word-break: break-all; background-color: #f0f9ff; padding: 10px; border-radius: 6px; border: 1px solid #bae6fd; font-family: monospace;">
-          ${verificationUrl}
+        <p style="font-size: 11px; word-break: break-all; color: #0284c7; background: #f1f5f9; padding: 8px 10px; border-radius: 4px; font-family: monospace;">
+          <a href="${resetUrl}" style="color: #0284c7; text-decoration: underline;">${resetUrl}</a>
         </p>
-
-        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 28px 0;" />
-
-        <p style="font-size: 12px; color: #94a3b8; margin: 0; line-height: 1.5;">
-          This verification link is valid for 24 hours. If you did not create an account on Capaciti Service Hub, you can safely ignore this email.
+        
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+        <p style="font-size: 11px; color: #94a3b8; margin: 0; text-align: center;">
+          Automated security message sent to ${recipientEmail} • Capaciti Service Hub Enterprise Identity.
         </p>
       </div>
     </div>
   `;
 
-  let emailSentSuccessfully = false;
-  let providerUsed = 'Simulator / Internal Mailer';
-  let responseDetails: any = null;
+  // Trigger external email dispatch if keys are configured in background
+  dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml);
 
-  // 1. Try EmailJS API if configured in environment
-  const emailJsServiceId = process.env.EMAILJS_SERVICE_ID;
-  const emailJsTemplateId = process.env.EMAILJS_TEMPLATE_ID;
-  const emailJsPublicKey = process.env.EMAILJS_PUBLIC_KEY;
-  const emailJsPrivateKey = process.env.EMAILJS_PRIVATE_KEY;
-
-  if (emailJsServiceId && emailJsTemplateId && emailJsPublicKey) {
-    try {
-      console.log(`[EmailService] Attempting EmailJS dispatch to ${recipientEmail}...`);
-      const payload: any = {
-        service_id: emailJsServiceId,
-        template_id: emailJsTemplateId,
-        user_id: emailJsPublicKey,
-        template_params: {
-          to_name: recipientName,
-          to_email: recipientEmail,
-          user_email: recipientEmail,
-          verification_link: verificationUrl,
-          verification_code: verificationCode,
-          app_name: 'Capaciti Service Hub',
-          subject: subject,
-          message_html: bodyHtml,
-        },
-      };
-      if (emailJsPrivateKey) {
-        payload.accessToken = emailJsPrivateKey;
-      }
-
-      const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (res.ok) {
-        emailSentSuccessfully = true;
-        providerUsed = 'EmailJS Service';
-        console.log(`[EmailService] Verification email sent via EmailJS to ${recipientEmail}`);
-      } else {
-        const errorText = await res.text();
-        console.warn(`[EmailService] EmailJS response status ${res.status}: ${errorText}`);
-      }
-    } catch (err: any) {
-      console.error('[EmailService] EmailJS dispatch failed:', err?.message || err);
-    }
-  }
-
-  // 2. Try Resend API if configured
-  const resendApiKey = process.env.RESEND_API_KEY;
-  if (!emailSentSuccessfully && resendApiKey) {
-    try {
-      console.log(`[EmailService] Attempting Resend dispatch to ${recipientEmail}...`);
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${resendApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'Capaciti Service Hub <onboarding@resend.dev>',
-          to: [recipientEmail],
-          subject: subject,
-          html: bodyHtml,
-        }),
-      });
-
-      if (res.ok) {
-        emailSentSuccessfully = true;
-        providerUsed = 'Resend Mailer';
-        console.log(`[EmailService] Verification email sent via Resend to ${recipientEmail}`);
-      } else {
-        const errJson = await res.json().catch(() => ({}));
-        console.warn('[EmailService] Resend API error:', errJson);
-      }
-    } catch (err: any) {
-      console.error('[EmailService] Resend dispatch failed:', err?.message || err);
-    }
-  }
-
-  // Log dispatch details
-  console.log(`[EmailService] Verification dispatch prepared for personal email: ${recipientEmail}. Verification URL: ${verificationUrl} Code: ${verificationCode}`);
-
-  return {
-    success: true,
-    provider: emailSentSuccessfully ? providerUsed : 'Capaciti Direct Email Gateway',
-    message: `Verification link dispatched to ${recipientEmail}`,
-    details: {
-      recipientEmail,
-      verificationUrl,
-      verificationCode,
-      provider: providerUsed,
-    },
-  };
+  return db.addEmailNotification(
+    'AUTH-RESET',
+    recipientEmail,
+    recipientName || 'User',
+    subject,
+    bodyHtml,
+    'PASSWORD_RESET'
+  );
 }
 
+// Password Reset Success Confirmation Email
+export function sendPasswordResetSuccessEmail(recipientEmail: string, recipientName: string) {
+  const subject = `✅ Password Reset Successful — Capaciti Service Hub`;
+
+  const bodyHtml = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background-color: #ffffff;">
+      <div style="background-color: #065f46; padding: 24px; color: #ffffff; text-align: left;">
+        <div style="display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #6ee7b7; margin-bottom: 4px;">CAPACITI SECURITY ALERT</div>
+        <h2 style="margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;">Password Successfully Updated</h2>
+        <p style="margin: 4px 0 0; opacity: 0.9; font-size: 13px; color: #d1fae5;">Account Security Notice</p>
+      </div>
+      
+      <div style="padding: 28px 24px; color: #334155; line-height: 1.6;">
+        <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Hello ${recipientName || 'User'},</h3>
+        <p>The password for your Capaciti Service Hub account (<strong>${recipientEmail}</strong>) was successfully changed on <strong>${new Date().toLocaleString()}</strong>.</p>
+        
+        <div style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-left: 4px solid #10b981; padding: 14px 16px; border-radius: 6px; margin: 20px 0; font-size: 13px; color: #065f46;">
+          <p style="margin: 0 0 4px; font-weight: 700;">✅ Your account is updated</p>
+          <p style="margin: 0;">You can now log in using your newly configured password. All prior reset tokens have been deactivated.</p>
+        </div>
+
+        <p style="font-size: 12px; color: #e11d48; font-weight: 600;">
+          ⚠️ If you did NOT initiate this password change, please contact your System Administrator or IT Support immediately to secure your account.
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
+        <p style="font-size: 11px; color: #94a3b8; margin: 0; text-align: center;">
+          Capaciti Service Hub • Enterprise Security & Access Governance
+        </p>
+      </div>
+    </div>
+  `;
+
+  return db.addEmailNotification(
+    'AUTH-SUCCESS',
+    recipientEmail,
+    recipientName || 'User',
+    subject,
+    bodyHtml,
+    'PASSWORD_RESET_SUCCESS'
+  );
+}

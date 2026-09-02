@@ -308,6 +308,18 @@
       "updatedAt": "2026-08-07T08:30:00.000Z"
     },
     {
+      "id": "user-tech-luthando-alias",
+      "name": "Luthando Didiza",
+      "email": "luthandodidiza197@gmail.com",
+      "passwordHash": "01f1448a1608d95f0d2df9a263f7d8e40da41a7f2c05600c62aa16908ad43f685a42aac5a8c25e0aac5bb4bb83dd1dc4c7b76c1c7aac3ff150470635eabe7f83",
+      "role": "TECHNICIAN",
+      "department": "IT Infrastructure & Systems",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-02T08:00:00.000Z",
+      "updatedAt": "2026-08-02T08:00:00.000Z"
+    },
+    {
       "id": "user-1788251153324-290",
       "name": "Test User",
       "email": "testuser@example.com",
@@ -1139,76 +1151,6 @@
     }
   ],
   "auditLogs": [
-    {
-      "id": "audit-1788356674082-442",
-      "actorUserId": "user-1788356674079-775",
-      "actorEmail": "imangekhumalo345@gmail.com",
-      "action": "REGISTER",
-      "targetType": "USER",
-      "targetId": "user-1788356674079-775",
-      "details": "User registered with role CUSTOMER (Pending Email Verification)",
-      "timestamp": "2026-09-02T13:44:34.082Z"
-    },
-    {
-      "id": "audit-1788356631146-623",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGOUT",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged out",
-      "timestamp": "2026-09-02T13:43:51.146Z"
-    },
-    {
-      "id": "audit-1788356626145-238",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGIN",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged in successfully",
-      "timestamp": "2026-09-02T13:43:46.145Z"
-    },
-    {
-      "id": "audit-1788356626140-916",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGIN",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged in successfully",
-      "timestamp": "2026-09-02T13:43:46.140Z"
-    },
-    {
-      "id": "audit-1788355999336-581",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGOUT",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged out",
-      "timestamp": "2026-09-02T13:33:19.336Z"
-    },
-    {
-      "id": "audit-1788355798449-970",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGIN",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged in successfully",
-      "timestamp": "2026-09-02T13:29:58.449Z"
-    },
-    {
-      "id": "audit-1788355798446-837",
-      "actorUserId": "user-global-admin",
-      "actorEmail": "admin@capaciti.org",
-      "action": "LOGIN",
-      "targetType": "USER",
-      "targetId": "user-global-admin",
-      "details": "User logged in successfully",
-      "timestamp": "2026-09-02T13:29:58.446Z"
-    },
     {
       "id": "audit-1788251207645-76",
       "actorUserId": "user-1788251207643-171",

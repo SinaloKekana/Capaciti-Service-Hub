@@ -19,9 +19,10 @@ import { CapacitiLogo, CapacitiLogoIcon } from './CapacitiLogo.js';
 interface LandingPageProps {
   onGetStarted: (mode?: 'login' | 'register') => void;
   onTryDemo?: (email: string, role: string) => void;
+  onForgotPassword?: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onTryDemo }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onTryDemo, onForgotPassword }) => {
   return (
     <div className="min-h-screen bg-[#f0f4f8] text-slate-900 flex flex-col font-sans">
       {/* Top Header */}

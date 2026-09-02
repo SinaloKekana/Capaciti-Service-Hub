@@ -22,6 +22,8 @@ import { ComplianceDSARView } from './components/ComplianceDSARView.js';
 import { AIChatbotWidget } from './components/AIChatbotWidget.js';
 import { AIChatbotView } from './components/AIChatbotView.js';
 import { AuthModal } from './components/AuthModal.js';
+import { ForgotPasswordView } from './components/ForgotPasswordView.js';
+import { ResetPasswordView } from './components/ResetPasswordView.js';
 import { EmailInboxDrawer } from './components/EmailInboxDrawer.js';
 import { CapacitiLogo, CapacitiLogoIcon } from './components/CapacitiLogo.js';
 import { 
@@ -45,28 +47,50 @@ export default function App() {
 
   // Modals & Drawers
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'verify'>('login');
-  const [verificationTokenParam, setVerificationTokenParam] = useState<string>('');
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
   const [showEmailInbox, setShowEmailInbox] = useState(false);
 
-  // Initial user check and URL verification handling
+  // Dedicated Password Reset Flow State
+  const [resetToken, setResetToken] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('resetToken') || params.get('token') || null;
+    }
+    return null;
+  });
+
+  const [authView, setAuthView] = useState<'default' | 'forgot-password' | 'reset-password'>(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('resetToken') || params.get('token')) {
+        return 'reset-password';
+      }
+    }
+    return 'default';
+  });
+
+  // Listen for browser URL popstate or parameter changes
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('resetToken') || params.get('token');
+      if (token) {
+        setResetToken(token);
+        setAuthView('reset-password');
+      }
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+    };
+  }, []);
+
+  // Initial user check
   useEffect(() => {
     const initUser = async () => {
       setIsLoadingUser(true);
       try {
-        // Check if there's a token in the URL for verification
-        const urlParams = new URLSearchParams(window.location.search);
-        const tokenInUrl = urlParams.get('token') || urlParams.get('verifyToken');
-        if (tokenInUrl) {
-          try {
-            await api.verifyEmail({ token: tokenInUrl });
-            // Clean URL query
-            window.history.replaceState({}, document.title, window.location.pathname);
-          } catch (e) {
-            console.error('Auto URL verification error:', e);
-          }
-        }
-
         const u = await api.getCurrentUser();
         if (u) {
           setUser(u);
@@ -90,13 +114,24 @@ export default function App() {
   }, []);
 
   // Fetch dashboard stats & taxonomy categories whenever activeTab changes or user changes
+  const fetchEmailLogs = async () => {
+    try {
+      const logs = await api.getEmailLogs();
+      setEmailLogs(logs);
+      return logs;
+    } catch (err) {
+      console.error('Error fetching email logs:', err);
+      return [];
+    }
+  };
+
   const refreshAppData = async () => {
     try {
       const isManagerOrAdmin = user?.role === 'ADMIN' || user?.role === 'SUPERVISOR';
       const [s, cList, eLogs] = await Promise.all([
         isManagerOrAdmin ? api.getDashboardStats().catch(() => null) : Promise.resolve(null),
         api.getCategories().catch(() => []),
-        user ? api.getEmailLogs().catch(() => []) : Promise.resolve([]),
+        api.getEmailLogs().catch(() => []),
       ]);
       if (s) setStats(s);
       setCategories(cList);
@@ -107,9 +142,7 @@ export default function App() {
   };
 
   useEffect(() => {
-    if (user) {
-      refreshAppData();
-    }
+    refreshAppData();
   }, [user, activeTab]);
 
   // Auth Handlers
@@ -123,13 +156,10 @@ export default function App() {
 
   const handleRegister = async (name: string, email: string, pass: string, role: UserRole) => {
     const data = await api.register(name, email, pass, role);
-    if (data.user) {
-      setUser(data.user);
-      const isManagerOrAdmin = data.user.role === 'ADMIN' || data.user.role === 'SUPERVISOR';
-      setActiveTab(isManagerOrAdmin ? 'dashboard' : 'requests');
-      await refreshAppData();
-    }
-    return data;
+    setUser(data.user);
+    const isManagerOrAdmin = data.user.role === 'ADMIN' || data.user.role === 'SUPERVISOR';
+    setActiveTab(isManagerOrAdmin ? 'dashboard' : 'requests');
+    await refreshAppData();
   };
 
   const handleLogout = async () => {
@@ -206,6 +236,70 @@ export default function App() {
     );
   }
 
+  // If user navigated to Forgot Password page
+  if (authView === 'forgot-password') {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] text-slate-900 font-sans">
+        <ForgotPasswordView
+          onBackToLogin={() => {
+            setAuthView('default');
+            handleOpenAuth('login');
+          }}
+          onOpenNotifications={async () => {
+            await fetchEmailLogs();
+            setShowEmailInbox(true);
+          }}
+          onNavigateToReset={(token) => {
+            setResetToken(token);
+            setAuthView('reset-password');
+          }}
+        />
+        {/* Email Inbox Receipts Slide-Over Drawer for Instant Testing */}
+        <EmailInboxDrawer
+          isOpen={showEmailInbox}
+          onClose={() => setShowEmailInbox(false)}
+          emailLogs={emailLogs}
+          onMarkAsRead={handleMarkEmailAsRead}
+          onMarkAllAsRead={handleMarkAllEmailsAsRead}
+        />
+      </div>
+    );
+  }
+
+  // If user navigated to Reset Password page (via link or token in URL)
+  if (authView === 'reset-password') {
+    return (
+      <div className="min-h-screen bg-[#f0f4f8] text-slate-900 font-sans">
+        <ResetPasswordView
+          token={resetToken || ''}
+          onBackToLogin={() => {
+            setAuthView('default');
+            setResetToken(null);
+            if (typeof window !== 'undefined') {
+              window.history.replaceState({}, '', window.location.pathname);
+            }
+            handleOpenAuth('login');
+          }}
+          onRequestNewResetLink={() => {
+            setAuthView('forgot-password');
+            setResetToken(null);
+            if (typeof window !== 'undefined') {
+              window.history.replaceState({}, '', window.location.pathname);
+            }
+          }}
+        />
+        {/* Email Inbox Receipts Slide-Over Drawer */}
+        <EmailInboxDrawer
+          isOpen={showEmailInbox}
+          onClose={() => setShowEmailInbox(false)}
+          emailLogs={emailLogs}
+          onMarkAsRead={handleMarkEmailAsRead}
+          onMarkAllAsRead={handleMarkAllEmailsAsRead}
+        />
+      </div>
+    );
+  }
+
   // If on Landing Page and not logged in
   if (activeTab === 'landing' || !user) {
     return (
@@ -213,6 +307,7 @@ export default function App() {
         <LandingPage
           onGetStarted={handleOpenAuth}
           onTryDemo={handleQuickDemoLogin}
+          onForgotPassword={() => setAuthView('forgot-password')}
         />
         <AuthModal
           isOpen={showAuthModal}
@@ -220,6 +315,10 @@ export default function App() {
           onLogin={handleLogin}
           onRegister={handleRegister}
           onQuickDemoLogin={handleQuickDemoLogin}
+          onForgotPassword={() => {
+            setShowAuthModal(false);
+            setAuthView('forgot-password');
+          }}
           initialMode={authModalMode}
         />
       </div>
@@ -484,6 +583,10 @@ export default function App() {
         onLogin={handleLogin}
         onRegister={handleRegister}
         onQuickDemoLogin={handleQuickDemoLogin}
+        onForgotPassword={() => {
+          setShowAuthModal(false);
+          setAuthView('forgot-password');
+        }}
         initialMode={authModalMode}
       />
 
