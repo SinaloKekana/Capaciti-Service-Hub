@@ -45,14 +45,28 @@ export default function App() {
 
   // Modals & Drawers
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
+  const [authModalMode, setAuthModalMode] = useState<'login' | 'register' | 'verify'>('login');
+  const [verificationTokenParam, setVerificationTokenParam] = useState<string>('');
   const [showEmailInbox, setShowEmailInbox] = useState(false);
 
-  // Initial user check
+  // Initial user check and URL verification handling
   useEffect(() => {
     const initUser = async () => {
       setIsLoadingUser(true);
       try {
+        // Check if there's a token in the URL for verification
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenInUrl = urlParams.get('token') || urlParams.get('verifyToken');
+        if (tokenInUrl) {
+          try {
+            await api.verifyEmail({ token: tokenInUrl });
+            // Clean URL query
+            window.history.replaceState({}, document.title, window.location.pathname);
+          } catch (e) {
+            console.error('Auto URL verification error:', e);
+          }
+        }
+
         const u = await api.getCurrentUser();
         if (u) {
           setUser(u);
@@ -107,12 +121,15 @@ export default function App() {
     await refreshAppData();
   };
 
-  const handleRegister = async (name: string, email: string, pass: string) => {
-    const data = await api.register(name, email, pass);
-    setUser(data.user);
-    const isManagerOrAdmin = data.user.role === 'ADMIN' || data.user.role === 'SUPERVISOR';
-    setActiveTab(isManagerOrAdmin ? 'dashboard' : 'requests');
-    await refreshAppData();
+  const handleRegister = async (name: string, email: string, pass: string, role: UserRole) => {
+    const data = await api.register(name, email, pass, role);
+    if (data.user) {
+      setUser(data.user);
+      const isManagerOrAdmin = data.user.role === 'ADMIN' || data.user.role === 'SUPERVISOR';
+      setActiveTab(isManagerOrAdmin ? 'dashboard' : 'requests');
+      await refreshAppData();
+    }
+    return data;
   };
 
   const handleLogout = async () => {

@@ -526,19 +526,6 @@ export const SEED_USERS: (User & { passwordHash: string })[] = [
     createdAt: '2026-08-07T08:30:00.000Z',
     updatedAt: '2026-08-07T08:30:00.000Z',
   },
-  // Legacy alias for Luthando's personal email
-  {
-    id: 'user-tech-luthando-alias',
-    name: 'Luthando Didiza',
-    email: 'luthandodidiza197@gmail.com',
-    passwordHash: hashPassword('Tech@Capaciti2026!'),
-    role: 'TECHNICIAN',
-    department: 'IT Infrastructure & Systems',
-    status: 'Active',
-    emailVerified: true,
-    createdAt: '2026-08-02T08:00:00.000Z',
-    updatedAt: '2026-08-02T08:00:00.000Z',
-  },
 ];
 
 // Rich, realistic seeded requests matching all requested states
@@ -1649,16 +1636,25 @@ class JsonDatabase {
     return cleanUser;
   }
 
-  public createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'> & { password: string }) {
+  public createUser(user: Omit<User, 'id' | 'createdAt' | 'updatedAt'> & { 
+    password: string; 
+    emailVerified?: boolean;
+    verificationToken?: string;
+    verificationTokenExpiresAt?: string;
+    verificationCode?: string;
+  }) {
     const newUser: User & { passwordHash: string } = {
       id: `user-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       name: user.name,
       email: user.email.toLowerCase(),
       passwordHash: hashPassword(user.password),
       role: user.role,
-      department: user.department || 'Digital Skills Academy',
+      department: user.department || (user.role === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy'),
       status: 'Active',
-      emailVerified: true,
+      emailVerified: user.emailVerified ?? false,
+      verificationToken: user.verificationToken,
+      verificationTokenExpiresAt: user.verificationTokenExpiresAt,
+      verificationCode: user.verificationCode,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -1666,6 +1662,49 @@ class JsonDatabase {
     this.save();
     const { passwordHash, ...clean } = newUser;
     return clean;
+  }
+
+  public findUserByVerificationToken(token: string) {
+    if (!token) return null;
+    return this.data.users.find((u) => u.verificationToken === token) || null;
+  }
+
+  public findUserByVerificationCode(email: string, code: string) {
+    if (!email || !code) return null;
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanCode = code.trim();
+    return this.data.users.find(
+      (u) => u.email.toLowerCase() === cleanEmail && (u.verificationCode === cleanCode || u.verificationToken === cleanCode)
+    ) || null;
+  }
+
+  public setVerificationToken(userId: string, token: string, expiresAt: string, code: string) {
+    const user = this.data.users.find((u) => u.id === userId);
+    if (user) {
+      user.verificationToken = token;
+      user.verificationTokenExpiresAt = expiresAt;
+      user.verificationCode = code;
+      user.updatedAt = new Date().toISOString();
+      this.save();
+      const { passwordHash, ...clean } = user;
+      return clean;
+    }
+    return null;
+  }
+
+  public verifyUserEmail(userId: string) {
+    const user = this.data.users.find((u) => u.id === userId);
+    if (user) {
+      user.emailVerified = true;
+      user.verificationToken = undefined;
+      user.verificationTokenExpiresAt = undefined;
+      user.verificationCode = undefined;
+      user.updatedAt = new Date().toISOString();
+      this.save();
+      const { passwordHash, ...clean } = user;
+      return clean;
+    }
+    return null;
   }
 
   public updateUserRole(userId: string, newRole: User['role']) {
@@ -1700,6 +1739,9 @@ class JsonDatabase {
       if (updates.department !== undefined) user.department = updates.department;
       if (updates.status !== undefined) user.status = updates.status;
       if (updates.emailVerified !== undefined) user.emailVerified = updates.emailVerified;
+      if (updates.jobTitle !== undefined) user.jobTitle = updates.jobTitle;
+      if (updates.verificationToken !== undefined) user.verificationToken = updates.verificationToken;
+      if (updates.verificationCode !== undefined) user.verificationCode = updates.verificationCode;
       user.updatedAt = new Date().toISOString();
       this.save();
       const { passwordHash, ...clean } = user;

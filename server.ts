@@ -16,7 +16,8 @@ import {
   sendAIResponseDispatchEmail,
   sendApprovalRequestEmail,
   sendApprovalDecisionEmail,
-  sendWorkflowAlertEmail
+  sendWorkflowAlertEmail,
+  sendEmailVerificationEmail
 } from './server/emailService.js';
 import { RequestItem, Priority, RequestStatus, UserRole, AIResponseTone, WorkflowRule, ApprovalRequest } from './src/types/index.js';
 
@@ -64,10 +65,17 @@ async function startServer() {
     res.json({ status: 'ok', service: 'Capaciti Service Hub', timestamp: new Date().toISOString() });
   });
 
+  const getAppBaseUrl = (req: express.Request) => {
+    if (process.env.APP_BASE_URL) return process.env.APP_BASE_URL.replace(/\/+$/, '');
+    const host = req.get('x-forwarded-host') || req.get('host') || 'localhost:3000';
+    const proto = req.get('x-forwarded-proto') || req.protocol || 'http';
+    return `${proto}://${host}`;
+  };
+
   // --- AUTHENTICATION APIS ---
-  app.post('/api/auth/register', (req, res) => {
+  app.post('/api/auth/register', async (req, res) => {
     try {
-      const { name, email, password } = req.body || {};
+      const { name, email, password, role } = req.body || {};
       const cleanName = (name || '').trim();
       const cleanEmail = (email || '').trim().toLowerCase();
       const cleanPass = (password || '').trim();
@@ -89,33 +97,158 @@ async function startServer() {
         return res.status(409).json({ error: 'An account with this email address already exists. Please log in instead.' });
       }
 
-      // STRICT ROLE ENFORCEMENT: Every new account created via public registration
-      // automatically starts with the default 'CUSTOMER' (End User) role.
-      // Only Administrators can assign or elevate user roles.
-      const assignedRole: UserRole = 'CUSTOMER';
+      // Restrict public registration to only End User (CUSTOMER) or Staff (EMPLOYEE).
+      // Technicians, Supervisors, and Admins CANNOT self-register directly; they must be promoted by an admin.
+      if (role === 'TECHNICIAN' || role === 'ADMIN' || role === 'SUPERVISOR' || (typeof role === 'string' && role.endsWith('_MANAGER'))) {
+        return res.status(403).json({ 
+          error: 'Direct registration as Service Desk Technician or Manager is not allowed. Please register as an End User or Staff. An administrator can promote your account.' 
+        });
+      }
+
+      const assignedRole: UserRole = role === 'EMPLOYEE' ? 'EMPLOYEE' : 'CUSTOMER';
+      const randToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
       const newUser = db.createUser({
         name: cleanName,
         email: cleanEmail,
         password: cleanPass,
         role: assignedRole,
-        department: 'Digital Skills Academy',
+        department: assignedRole === 'EMPLOYEE' ? 'Operations' : 'Digital Skills Academy',
+        emailVerified: false,
+        verificationToken: randToken,
+        verificationTokenExpiresAt: expiresAt,
+        verificationCode: verificationCode,
       });
 
-      db.addAuditLog(
-        newUser.id, 
-        newUser.email, 
-        'REGISTER', 
-        'USER', 
-        newUser.id, 
-        `New account created. Automatically assigned default role: End User (${newUser.role})`
-      );
+      db.addAuditLog(newUser.id, newUser.email, 'REGISTER', 'USER', newUser.id, `User registered with role ${newUser.role} (Pending Email Verification)`);
+
+      const baseUrl = getAppBaseUrl(req);
+      const verificationUrl = `${baseUrl}/#verify?token=${randToken}&email=${encodeURIComponent(cleanEmail)}`;
+
+      // Dispatch real email verification link directly to the user's personal email
+      await sendEmailVerificationEmail({
+        recipientEmail: cleanEmail,
+        recipientName: cleanName,
+        verificationToken: randToken,
+        verificationCode,
+        verificationUrl,
+      });
 
       const token = Buffer.from(newUser.id).toString('base64');
-      return res.status(201).json({ user: newUser, token });
+      return res.status(201).json({ 
+        user: newUser, 
+        token, 
+        message: `A verification link has been sent to your personal email (${cleanEmail}). Please check your inbox.`,
+        verificationToken: randToken,
+        verificationCode,
+        verificationUrl,
+        requiresEmailVerification: true
+      });
     } catch (err: any) {
       console.error('Register error:', err);
       return res.status(500).json({ error: 'Internal server error during registration. Please try again.' });
+    }
+  });
+
+  // Verify email by token or 6-digit code
+  app.post('/api/auth/verify-email', (req, res) => {
+    try {
+      const { token, code, email } = req.body || {};
+      let userToVerify = null;
+
+      if (token) {
+        userToVerify = db.findUserByVerificationToken(token);
+      } else if (email && code) {
+        userToVerify = db.findUserByVerificationCode(email, code);
+      }
+
+      if (!userToVerify) {
+        return res.status(400).json({ error: 'Invalid verification link or confirmation code. Please check and try again.' });
+      }
+
+      if (userToVerify.verificationTokenExpiresAt && new Date(userToVerify.verificationTokenExpiresAt).getTime() < Date.now()) {
+        return res.status(400).json({ error: 'Verification link has expired. Please request a new verification link.' });
+      }
+
+      const verifiedUser = db.verifyUserEmail(userToVerify.id);
+      db.addAuditLog(userToVerify.id, userToVerify.email, 'EMAIL_VERIFIED', 'USER', userToVerify.id, 'User successfully verified personal email address');
+
+      const authToken = Buffer.from(userToVerify.id).toString('base64');
+      return res.json({ 
+        success: true, 
+        user: verifiedUser, 
+        token: authToken, 
+        message: 'Your personal email address has been successfully verified! You have full access.' 
+      });
+    } catch (err: any) {
+      console.error('Verify email error:', err);
+      return res.status(500).json({ error: 'Internal server error during email verification.' });
+    }
+  });
+
+  // GET handler for email client direct clicks
+  app.get('/api/auth/verify-email', (req, res) => {
+    try {
+      const token = req.query.token as string;
+      if (!token) {
+        return res.redirect('/#verify?error=missing_token');
+      }
+      const userToVerify = db.findUserByVerificationToken(token);
+      if (!userToVerify) {
+        return res.redirect('/#verify?error=invalid_token');
+      }
+      db.verifyUserEmail(userToVerify.id);
+      db.addAuditLog(userToVerify.id, userToVerify.email, 'EMAIL_VERIFIED', 'USER', userToVerify.id, 'User verified personal email via direct click');
+      return res.redirect(`/#verify?success=true&email=${encodeURIComponent(userToVerify.email)}`);
+    } catch (err) {
+      return res.redirect('/#verify?error=server_error');
+    }
+  });
+
+  // Resend verification email to user's personal email
+  app.post('/api/auth/resend-verification', async (req, res) => {
+    try {
+      const { email } = req.body || {};
+      const cleanEmail = (email || '').trim().toLowerCase();
+      if (!cleanEmail) {
+        return res.status(400).json({ error: 'Email address is required' });
+      }
+      const user = db.findUserByEmail(cleanEmail);
+      if (!user) {
+        return res.status(404).json({ error: 'No account found with this email address.' });
+      }
+      if (user.emailVerified) {
+        return res.json({ success: true, message: 'This email is already verified. You can log in directly.' });
+      }
+
+      const randToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+
+      db.setVerificationToken(user.id, randToken, expiresAt, verificationCode);
+      const baseUrl = getAppBaseUrl(req);
+      const verificationUrl = `${baseUrl}/#verify?token=${randToken}&email=${encodeURIComponent(cleanEmail)}`;
+
+      await sendEmailVerificationEmail({
+        recipientEmail: cleanEmail,
+        recipientName: user.name,
+        verificationToken: randToken,
+        verificationCode,
+        verificationUrl,
+      });
+
+      return res.json({ 
+        success: true, 
+        message: `A new verification email has been dispatched to ${cleanEmail}.`,
+        verificationToken: randToken,
+        verificationCode,
+        verificationUrl
+      });
+    } catch (err: any) {
+      console.error('Resend verification error:', err);
+      return res.status(500).json({ error: 'Failed to resend verification email.' });
     }
   });
 
@@ -141,11 +274,39 @@ async function startServer() {
       db.addAuditLog(cleanUser.id, cleanUser.email, 'LOGIN', 'USER', cleanUser.id, 'User logged in successfully');
 
       const token = Buffer.from(cleanUser.id).toString('base64');
-      return res.json({ user: cleanUser, token });
+      return res.json({ 
+        user: cleanUser, 
+        token,
+        emailVerified: cleanUser.emailVerified !== false
+      });
     } catch (err: any) {
       console.error('Login error:', err);
       return res.status(500).json({ error: 'Internal server error during login' });
     }
+  });
+
+  // Admin endpoint: Promote user to Service Desk Technician
+  app.post('/api/admin/users/:id/promote-technician', (req, res) => {
+    const adminUser = getUserFromReq(req);
+    if (!adminUser || adminUser.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Global Administrator privilege required to promote staff to Technician' });
+    }
+    const { id } = req.params;
+    const targetUser = db.findUserById(id);
+    if (!targetUser) {
+      return res.status(404).json({ error: 'User account not found' });
+    }
+    const updated = db.updateUser(id, { 
+      role: 'TECHNICIAN', 
+      department: 'IT Operations',
+      jobTitle: 'Service Desk Technician' 
+    });
+    db.addAuditLog(adminUser.id, adminUser.email, 'PROMOTE_TECHNICIAN', 'USER', id, `Admin promoted ${targetUser.name} (${targetUser.email}) from ${targetUser.role} to Service Desk Technician`);
+    return res.json({ 
+      success: true, 
+      user: updated, 
+      message: `Successfully promoted ${targetUser.name} to Service Desk Technician.` 
+    });
   });
 
   app.get('/api/auth/me', (req, res) => {
@@ -721,73 +882,6 @@ async function startServer() {
       return res.status(403).json({ error: 'Admin authorization required' });
     }
     return res.json({ users: db.getUsers() });
-  });
-
-  // Administrator endpoint to create accounts with pre-assigned roles & departments
-  app.post('/api/admin/users', (req, res) => {
-    const user = getUserFromReq(req);
-    if (!user || user.role !== 'ADMIN') {
-      return res.status(403).json({ error: 'Only Administrators have permission to provision accounts with assigned roles' });
-    }
-
-    try {
-      const { name, email, password, role, department } = req.body || {};
-      const cleanName = (name || '').trim();
-      const cleanEmail = (email || '').trim().toLowerCase();
-      const cleanPass = (password || '').trim();
-
-      if (!cleanName || !cleanEmail || !cleanPass) {
-        return res.status(400).json({ error: 'Name, email, and password are required' });
-      }
-
-      if (!cleanEmail.includes('@') || !cleanEmail.includes('.')) {
-        return res.status(400).json({ error: 'Please provide a valid email address' });
-      }
-
-      if (cleanPass.length < 6) {
-        return res.status(400).json({ error: 'Password must be at least 6 characters long' });
-      }
-
-      const existing = db.findUserByEmail(cleanEmail);
-      if (existing) {
-        return res.status(409).json({ error: 'An account with this email address already exists.' });
-      }
-
-      const allowedRoles = [
-        'CUSTOMER', 
-        'EMPLOYEE', 
-        'TECHNICIAN', 
-        'SUPERVISOR', 
-        'HR_MANAGER', 
-        'FINANCE_MANAGER', 
-        'IT_MANAGER', 
-        'FACILITIES_MANAGER', 
-        'ADMIN'
-      ];
-      const targetRole = allowedRoles.includes(role) ? (role as UserRole) : 'CUSTOMER';
-
-      const newUser = db.createUser({
-        name: cleanName,
-        email: cleanEmail,
-        password: cleanPass,
-        role: targetRole,
-        department: department || (targetRole === 'CUSTOMER' ? 'Digital Skills Academy' : 'IT Operations'),
-      });
-
-      db.addAuditLog(
-        user.id, 
-        user.email, 
-        'ADMIN_CREATE_USER', 
-        'USER', 
-        newUser.id, 
-        `Administrator ${user.name} created user account for ${newUser.name} (${newUser.email}) with role: ${newUser.role} in ${newUser.department}`
-      );
-
-      return res.status(201).json({ user: newUser, message: 'User account created successfully' });
-    } catch (err: any) {
-      console.error('Admin create user error:', err);
-      return res.status(500).json({ error: 'Failed to create user account' });
-    }
   });
 
   app.patch('/api/admin/users/:id/role', (req, res) => {

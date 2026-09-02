@@ -30,6 +30,9 @@ export interface User {
   departmentScope?: string[];
   status?: 'Active' | 'Suspended';
   emailVerified?: boolean;
+  verificationToken?: string;
+  verificationTokenExpiresAt?: string;
+  verificationCode?: string;
   lastLogin?: string;
   createdAt: string;
   updatedAt: string;

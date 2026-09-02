@@ -81,10 +81,10 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 
 export const api = {
   // Auth
-  register: async (name: string, email: string, password: string) => {
+  register: async (name: string, email: string, password: string, role: string = 'CUSTOMER') => {
     const data = await apiFetch('/api/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ name, email, password, role }),
     });
     if (data.token) setStoredToken(data.token);
     return data;
@@ -96,6 +96,30 @@ export const api = {
       body: JSON.stringify({ email, password }),
     });
     if (data.token) setStoredToken(data.token);
+    return data;
+  },
+
+  verifyEmail: async (params: { token?: string; code?: string; email?: string }) => {
+    const data = await apiFetch('/api/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify(params),
+    });
+    if (data.token) setStoredToken(data.token);
+    return data;
+  },
+
+  resendVerification: async (email: string) => {
+    const data = await apiFetch('/api/auth/resend-verification', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+    return data;
+  },
+
+  promoteToTechnician: async (userId: string) => {
+    const data = await apiFetch(`/api/admin/users/${userId}/promote-technician`, {
+      method: 'POST',
+    });
     return data;
   },
 
@@ -256,20 +280,6 @@ export const api = {
   getUsers: async (): Promise<User[]> => {
     const data = await apiFetch('/api/admin/users');
     return data.users;
-  },
-
-  createAdminUser: async (userData: {
-    name: string;
-    email: string;
-    password: string;
-    role: string;
-    department?: string;
-  }): Promise<{ user: User; message: string }> => {
-    const data = await apiFetch('/api/admin/users', {
-      method: 'POST',
-      body: JSON.stringify(userData),
-    });
-    return data;
   },
 
   updateUserRole: async (userId: string, role: string): Promise<User> => {
