@@ -286,6 +286,28 @@ export const AuthModal: React.FC<AuthModalProps> = ({
                 >
                   🛠️ Technician
                 </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('mbalientlempendu02@gmail.com');
+                    setPassword('Capaciti2026!');
+                  }}
+                  className="p-1.5 text-left rounded-lg bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-900 font-semibold transition-colors cursor-pointer col-span-2 flex items-center justify-between"
+                >
+                  <span>🌸 Mbali Entle Mpendu</span>
+                  <span className="text-[10px] text-emerald-700 font-mono">mbalientlempendu02@gmail.com</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('luthandodidiza197@gmail.com');
+                    setPassword('Tech@Capaciti2026!');
+                  }}
+                  className="p-1.5 text-left rounded-lg bg-sky-50 hover:bg-sky-100 border border-sky-200/80 text-sky-900 font-semibold transition-colors cursor-pointer col-span-2 flex items-center justify-between"
+                >
+                  <span>🛠️ Luthando Didiza</span>
+                  <span className="text-[10px] text-sky-700 font-mono">luthandodidiza197@gmail.com</span>
+                </button>
               </div>
             </div>
           )}

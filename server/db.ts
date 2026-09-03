@@ -542,6 +542,18 @@ export const SEED_USERS: (User & { passwordHash: string })[] = [
     createdAt: '2026-08-02T08:00:00.000Z',
     updatedAt: '2026-08-02T08:00:00.000Z',
   },
+  {
+    id: 'user-cust-mbali',
+    name: 'Mbali Entle Mpendu',
+    email: 'mbalientlempendu02@gmail.com',
+    passwordHash: hashPassword('Capaciti2026!'),
+    role: 'CUSTOMER',
+    department: 'Digital Skills Academy',
+    status: 'Active',
+    emailVerified: true,
+    createdAt: '2026-08-01T08:00:00.000Z',
+    updatedAt: '2026-08-01T08:00:00.000Z',
+  },
 ];
 
 // Rich, realistic seeded requests matching all requested states

@@ -50,39 +50,62 @@ export default function App() {
   const [authModalMode, setAuthModalMode] = useState<'login' | 'register'>('login');
   const [showEmailInbox, setShowEmailInbox] = useState(false);
 
-  // Dedicated Password Reset Flow State
-  const [resetToken, setResetToken] = useState<string | null>(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('resetToken') || params.get('token') || null;
+  // Parse reset token from search params or URL hash
+  const parseResetTokenFromCurrentUrl = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    const params = new URLSearchParams(window.location.search);
+    const searchToken = params.get('resetToken') || params.get('token');
+    if (searchToken && searchToken.trim()) return searchToken.trim();
+
+    const hash = window.location.hash || '';
+    if (hash.includes('token=')) {
+      const match = hash.match(/token=([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) return match[1].trim();
     }
     return null;
+  };
+
+  // Dedicated Password Reset Flow State
+  const [resetToken, setResetToken] = useState<string | null>(() => {
+    return parseResetTokenFromCurrentUrl();
   });
 
   const [authView, setAuthView] = useState<'default' | 'forgot-password' | 'reset-password'>(() => {
+    const token = parseResetTokenFromCurrentUrl();
+    if (token) {
+      return 'reset-password';
+    }
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('resetToken') || params.get('token')) {
+      if (params.get('view') === 'forgot-password' || window.location.hash === '#forgot-password') {
+        return 'forgot-password';
+      }
+      if (params.get('view') === 'reset-password' || window.location.hash.startsWith('#reset')) {
         return 'reset-password';
       }
     }
     return 'default';
   });
 
-  // Listen for browser URL popstate or parameter changes
+  // Listen for browser URL popstate or hashchange events
   useEffect(() => {
     const handleLocationChange = () => {
-      const params = new URLSearchParams(window.location.search);
-      const token = params.get('resetToken') || params.get('token');
+      const token = parseResetTokenFromCurrentUrl();
       if (token) {
         setResetToken(token);
+        setAuthView('reset-password');
+      } else if (window.location.hash === '#forgot-password' || new URLSearchParams(window.location.search).get('view') === 'forgot-password') {
+        setAuthView('forgot-password');
+      } else if (window.location.hash.startsWith('#reset') || new URLSearchParams(window.location.search).get('view') === 'reset-password') {
         setAuthView('reset-password');
       }
     };
 
     window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
     return () => {
       window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
     };
   }, []);
 

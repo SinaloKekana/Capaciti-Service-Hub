@@ -317,7 +317,22 @@
       "status": "Active",
       "emailVerified": true,
       "createdAt": "2026-08-02T08:00:00.000Z",
-      "updatedAt": "2026-08-02T08:00:00.000Z"
+      "updatedAt": "2026-09-03T09:21:23.486Z",
+      "resetToken": "68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966",
+      "resetTokenExpiry": "2026-09-03T09:51:23.486Z",
+      "resetTokenUsed": false
+    },
+    {
+      "id": "user-cust-mbali",
+      "name": "Mbali Entle Mpendu",
+      "email": "mbalientlempendu02@gmail.com",
+      "passwordHash": "03aa92ab1d5a0292ba9fac8ab05ea86bdb4b7ab33177fab9b05dd093dd5045fe618f00d09cc410fd5abf3b6ffc8230b7f07175162b8b9427b4fa46423fe0757d",
+      "role": "CUSTOMER",
+      "department": "Digital Skills Academy",
+      "status": "Active",
+      "emailVerified": true,
+      "createdAt": "2026-08-01T08:00:00.000Z",
+      "updatedAt": "2026-08-01T08:00:00.000Z"
     },
     {
       "id": "user-1788251153324-290",
@@ -1152,6 +1167,26 @@
   ],
   "auditLogs": [
     {
+      "id": "audit-1788427283490-231",
+      "actorUserId": "user-tech-luthando-alias",
+      "actorEmail": "luthandodidiza197@gmail.com",
+      "action": "PASSWORD_RESET_REQUESTED",
+      "targetType": "USER",
+      "targetId": "user-tech-luthando-alias",
+      "details": "Password reset requested; temporary single-use token created (expires in 30 mins).",
+      "timestamp": "2026-09-03T09:21:23.490Z"
+    },
+    {
+      "id": "audit-1788427228294-910",
+      "actorUserId": "user-tech-luthando-alias",
+      "actorEmail": "luthandodidiza197@gmail.com",
+      "action": "PASSWORD_RESET_REQUESTED",
+      "targetType": "USER",
+      "targetId": "user-tech-luthando-alias",
+      "details": "Password reset requested; temporary single-use token created (expires in 30 mins).",
+      "timestamp": "2026-09-03T09:20:28.294Z"
+    },
+    {
       "id": "audit-1788251207645-76",
       "actorUserId": "user-1788251207643-171",
       "actorEmail": "alex.tech@capaciti.org.za",
@@ -1212,7 +1247,36 @@
       "timestamp": "2026-08-21T00:00:00.000Z"
     }
   ],
-  "emailNotifications": [],
+  "emailNotifications": [
+    {
+      "id": "email-1788427283489-732",
+      "ticketId": "AUTH-RESET",
+      "requestId": "AUTH-RESET",
+      "recipientEmail": "luthandodidiza197@gmail.com",
+      "recipientName": "Luthando Didiza",
+      "subject": "🔒 Reset Your Capaciti Service Hub Password",
+      "bodyHtml": "\n    <div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background-color: #ffffff;\">\n      <div style=\"background-color: #0f172a; padding: 24px; color: #ffffff; text-align: left;\">\n        <div style=\"display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #38bdf8; margin-bottom: 4px;\">CAPACITI SERVICE HUB</div>\n        <h2 style=\"margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;\">Password Reset Request</h2>\n        <p style=\"margin: 4px 0 0; opacity: 0.85; font-size: 13px; color: #94a3b8;\">Single-use secure authorization token</p>\n      </div>\n      \n      <div style=\"padding: 28px 24px; color: #334155; line-height: 1.6;\">\n        <h3 style=\"margin-top: 0; color: #0f172a; font-size: 16px;\">Hello Luthando Didiza,</h3>\n        <p style=\"margin-bottom: 16px;\">We received a request to reset your password for your Capaciti Service Hub account (<strong>luthandodidiza197@gmail.com</strong>).</p>\n        \n        <p style=\"margin-bottom: 24px;\">To create a new password, click the secure button below:</p>\n        \n        <div style=\"text-align: center; margin: 28px 0;\">\n          <a href=\"http://localhost:3000/?resetToken=68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966\" style=\"background-color: #0284c7; color: #ffffff; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);\">\n            Reset Password\n          </a>\n        </div>\n        \n        <div style=\"background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; padding: 14px 16px; border-radius: 6px; margin: 24px 0; font-size: 12px; color: #475569;\">\n          <p style=\"margin: 0 0 6px; font-weight: 700; color: #0f172a;\">Important Security Notice:</p>\n          <ul style=\"margin: 0; padding-left: 18px; line-height: 1.5;\">\n            <li>This link is valid for <strong>30 minutes</strong> and will expire automatically.</li>\n            <li>This link is for <strong>one-time use only</strong> and becomes invalid once used.</li>\n            <li>If you did not request this password reset, you can safely ignore this email — your current password remains secure.</li>\n          </ul>\n        </div>\n\n        <p style=\"font-size: 12px; color: #64748b; margin-top: 20px;\">\n          If the button above does not work, copy and paste this link into your browser:\n        </p>\n        <p style=\"font-size: 11px; word-break: break-all; color: #0284c7; background: #f1f5f9; padding: 8px 10px; border-radius: 4px; font-family: monospace;\">\n          <a href=\"http://localhost:3000/?resetToken=68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966\" style=\"color: #0284c7; text-decoration: underline;\">http://localhost:3000/?resetToken=68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966</a>\n        </p>\n        \n        <hr style=\"border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;\" />\n        <p style=\"font-size: 11px; color: #94a3b8; margin: 0; text-align: center;\">\n          Automated security message sent to luthandodidiza197@gmail.com • Capaciti Service Hub Enterprise Identity.\n        </p>\n      </div>\n    </div>\n  ",
+      "bodyText": "\n    \n      \n        CAPACITI SERVICE HUB\n        Password Reset Request\n        Single-use secure authorization token\n      \n      \n      \n        Hello Luthando Didiza,\n        We received a request to reset your password for your Capaciti Service Hub account (luthandodidiza197@gmail.com).\n        \n        To create a new password, click the secure button below:\n        \n        \n          \n            Reset Password\n          \n        \n        \n        \n          Important Security Notice:\n          \n            This link is valid for 30 minutes and will expire automatically.\n            This link is for one-time use only and becomes invalid once used.\n            If you did not request this password reset, you can safely ignore this email — your current password remains secure.\n          \n        \n\n        \n          If the button above does not work, copy and paste this link into your browser:\n        \n        \n          http://localhost:3000/?resetToken=68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966\n        \n        \n        \n        \n          Automated security message sent to luthandodidiza197@gmail.com • Capaciti Service Hub Enterprise Identity.\n        \n      \n    \n  ",
+      "type": "PASSWORD_RESET",
+      "sentAt": "2026-09-03T09:21:23.489Z",
+      "deliveryStatus": "delivered",
+      "isRead": false
+    },
+    {
+      "id": "email-1788427228293-711",
+      "ticketId": "AUTH-RESET",
+      "requestId": "AUTH-RESET",
+      "recipientEmail": "luthandodidiza197@gmail.com",
+      "recipientName": "Luthando Didiza",
+      "subject": "🔒 Reset Your Capaciti Service Hub Password",
+      "bodyHtml": "\n    <div style=\"font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); background-color: #ffffff;\">\n      <div style=\"background-color: #0f172a; padding: 24px; color: #ffffff; text-align: left;\">\n        <div style=\"display: inline-block; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #38bdf8; margin-bottom: 4px;\">CAPACITI SERVICE HUB</div>\n        <h2 style=\"margin: 0; font-size: 20px; font-weight: 700; color: #ffffff;\">Password Reset Request</h2>\n        <p style=\"margin: 4px 0 0; opacity: 0.85; font-size: 13px; color: #94a3b8;\">Single-use secure authorization token</p>\n      </div>\n      \n      <div style=\"padding: 28px 24px; color: #334155; line-height: 1.6;\">\n        <h3 style=\"margin-top: 0; color: #0f172a; font-size: 16px;\">Hello Luthando Didiza,</h3>\n        <p style=\"margin-bottom: 16px;\">We received a request to reset your password for your Capaciti Service Hub account (<strong>luthandodidiza197@gmail.com</strong>).</p>\n        \n        <p style=\"margin-bottom: 24px;\">To create a new password, click the secure button below:</p>\n        \n        <div style=\"text-align: center; margin: 28px 0;\">\n          <a href=\"http://localhost:3000/?resetToken=3e1de8534e6c08d05827bd6c52eef12f39f23592e3e040622b14eb280cb57c9d\" style=\"background-color: #0284c7; color: #ffffff; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);\">\n            Reset Password\n          </a>\n        </div>\n        \n        <div style=\"background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; padding: 14px 16px; border-radius: 6px; margin: 24px 0; font-size: 12px; color: #475569;\">\n          <p style=\"margin: 0 0 6px; font-weight: 700; color: #0f172a;\">Important Security Notice:</p>\n          <ul style=\"margin: 0; padding-left: 18px; line-height: 1.5;\">\n            <li>This link is valid for <strong>30 minutes</strong> and will expire automatically.</li>\n            <li>This link is for <strong>one-time use only</strong> and becomes invalid once used.</li>\n            <li>If you did not request this password reset, you can safely ignore this email — your current password remains secure.</li>\n          </ul>\n        </div>\n\n        <p style=\"font-size: 12px; color: #64748b; margin-top: 20px;\">\n          If the button above does not work, copy and paste this link into your browser:\n        </p>\n        <p style=\"font-size: 11px; word-break: break-all; color: #0284c7; background: #f1f5f9; padding: 8px 10px; border-radius: 4px; font-family: monospace;\">\n          <a href=\"http://localhost:3000/?resetToken=3e1de8534e6c08d05827bd6c52eef12f39f23592e3e040622b14eb280cb57c9d\" style=\"color: #0284c7; text-decoration: underline;\">http://localhost:3000/?resetToken=3e1de8534e6c08d05827bd6c52eef12f39f23592e3e040622b14eb280cb57c9d</a>\n        </p>\n        \n        <hr style=\"border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;\" />\n        <p style=\"font-size: 11px; color: #94a3b8; margin: 0; text-align: center;\">\n          Automated security message sent to luthandodidiza197@gmail.com • Capaciti Service Hub Enterprise Identity.\n        </p>\n      </div>\n    </div>\n  ",
+      "bodyText": "\n    \n      \n        CAPACITI SERVICE HUB\n        Password Reset Request\n        Single-use secure authorization token\n      \n      \n      \n        Hello Luthando Didiza,\n        We received a request to reset your password for your Capaciti Service Hub account (luthandodidiza197@gmail.com).\n        \n        To create a new password, click the secure button below:\n        \n        \n          \n            Reset Password\n          \n        \n        \n        \n          Important Security Notice:\n          \n            This link is valid for 30 minutes and will expire automatically.\n            This link is for one-time use only and becomes invalid once used.\n            If you did not request this password reset, you can safely ignore this email — your current password remains secure.\n          \n        \n\n        \n          If the button above does not work, copy and paste this link into your browser:\n        \n        \n          http://localhost:3000/?resetToken=3e1de8534e6c08d05827bd6c52eef12f39f23592e3e040622b14eb280cb57c9d\n        \n        \n        \n        \n          Automated security message sent to luthandodidiza197@gmail.com • Capaciti Service Hub Enterprise Identity.\n        \n      \n    \n  ",
+      "type": "PASSWORD_RESET",
+      "sentAt": "2026-09-03T09:20:28.293Z",
+      "deliveryStatus": "delivered",
+      "isRead": false
+    }
+  ],
   "executiveReports": [],
   "insights": [],
   "workflowRules": [
@@ -1622,6 +1686,27 @@
       "description": "Automated DSAR pipeline supporting instant JSON/CSV export and cryptographically scrubbed anonymization.",
       "recordsCovered": 24,
       "lastEnforced": "2026-08-23T00:00:00.000Z"
+    }
+  ],
+  "passwordResetTokens": [
+    {
+      "id": "prt-1788427283486-98fd8422",
+      "token": "68d30f7f0bf2428cf20b3ce90b4c328fd02b89a67a975e53c0628c14c7a47966",
+      "userId": "user-tech-luthando-alias",
+      "userEmail": "luthandodidiza197@gmail.com",
+      "expiresAt": "2026-09-03T09:51:23.486Z",
+      "used": false,
+      "createdAt": "2026-09-03T09:21:23.486Z"
+    },
+    {
+      "id": "prt-1788427228283-7548f149",
+      "token": "3e1de8534e6c08d05827bd6c52eef12f39f23592e3e040622b14eb280cb57c9d",
+      "userId": "user-tech-luthando-alias",
+      "userEmail": "luthandodidiza197@gmail.com",
+      "expiresAt": "2026-09-03T09:50:28.283Z",
+      "used": true,
+      "createdAt": "2026-09-03T09:20:28.283Z",
+      "usedAt": "2026-09-03T09:21:23.486Z"
     }
   ]
 }

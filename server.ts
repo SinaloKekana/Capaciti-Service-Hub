@@ -177,8 +177,26 @@ async function startServer() {
     return true;
   };
 
+  // Helper to compute a publicly accessible base URL for reset links and emails
+  const getPublicBaseUrl = (req: express.Request): string => {
+    if (process.env.APP_BASE_URL) {
+      return process.env.APP_BASE_URL.replace(/\/+$/, '');
+    }
+    const forwardedHost = (req.headers['x-forwarded-host'] as string) || req.get('host') || 'localhost:3000';
+    let host = forwardedHost.split(',')[0].trim();
+    // AI Studio Cloud Run development containers (ais-dev-*.run.app) enforce Google IAM cookie checks (__cookie_check.html)
+    // which fail with 403 when clicked from external email apps or mobile devices.
+    // Converting to the public shared preview URL (ais-pre-*.run.app) guarantees anyone clicking the link lands directly on the app!
+    if (host.includes('ais-dev-')) {
+      host = host.replace('ais-dev-', 'ais-pre-');
+    }
+    const forwardedProto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
+    const proto = forwardedProto.split(',')[0].trim();
+    return `${proto}://${host}`;
+  };
+
   // 1. Request Password Reset Link
-  app.post('/api/auth/forgot-password', (req, res) => {
+  app.post('/api/auth/forgot-password', async (req, res) => {
     try {
       const { email } = req.body || {};
       const cleanEmail = (email || '').trim().toLowerCase();
@@ -202,14 +220,21 @@ async function startServer() {
       const tokenResult = db.createPasswordResetToken(cleanEmail);
 
       let resetUrl = '';
-      if (tokenResult) {
-        // Construct secure HTTPS/HTTP reset link
-        const forwardedProto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
-        const host = req.get('host') || 'localhost:3000';
-        resetUrl = `${forwardedProto}://${host}/?resetToken=${tokenResult.token}`;
+      let deliveryResult: any = null;
 
-        // Send branded password reset email (also logged to notifications drawer)
-        sendPasswordResetEmail(tokenResult.user.email, tokenResult.user.name, tokenResult.token, resetUrl);
+      if (tokenResult) {
+        // Construct secure HTTPS/HTTP reset link using public base URL
+        const publicBase = getPublicBaseUrl(req);
+        resetUrl = `${publicBase}/?resetToken=${tokenResult.token}`;
+
+        // Send branded password reset email (dispatches via Resend/SendGrid and records in notification center)
+        const emailOutcome = await sendPasswordResetEmail(
+          tokenResult.user.email,
+          tokenResult.user.name,
+          tokenResult.token,
+          resetUrl
+        );
+        deliveryResult = emailOutcome?.delivery;
 
         db.addAuditLog(
           tokenResult.user.id,
@@ -221,13 +246,14 @@ async function startServer() {
         );
       }
 
-      // Return confirmation along with verification link payload
+      // Return confirmation along with verification link and delivery diagnostics
       return res.json({
         success: true,
         message: 'If an account with this email address exists, you will receive a password reset link shortly.',
         resetUrl: resetUrl || undefined,
         resetToken: tokenResult?.token,
         email: cleanEmail,
+        delivery: deliveryResult,
       });
     } catch (err: any) {
       console.error('Forgot password error:', err);
@@ -271,7 +297,7 @@ async function startServer() {
   });
 
   // 3. Confirm Password Reset & Update Credentials
-  app.post('/api/auth/reset-password', (req, res) => {
+  app.post('/api/auth/reset-password', async (req, res) => {
     try {
       const { token, newPassword } = req.body || {};
       const cleanToken = (token || '').trim();
@@ -298,7 +324,7 @@ async function startServer() {
 
       // Send security confirmation email
       if (result.user) {
-        sendPasswordResetSuccessEmail(result.user.email, result.user.name);
+        await sendPasswordResetSuccessEmail(result.user.email, result.user.name);
       }
 
       return res.json({

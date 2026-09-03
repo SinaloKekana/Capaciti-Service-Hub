@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, ArrowLeft, Send, CheckCircle2, ShieldAlert, KeyRound, Clock, ShieldCheck, Copy, Check, ExternalLink } from 'lucide-react';
+import { Mail, ArrowLeft, Send, CheckCircle2, ShieldAlert, KeyRound, Clock, ShieldCheck, Copy, Check, ExternalLink, AlertTriangle, Info } from 'lucide-react';
 import { CapacitiLogoIcon } from './CapacitiLogo.js';
 import { api } from '../services/api.js';
 
@@ -21,6 +21,17 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
   const [sentResetUrl, setSentResetUrl] = useState<string | null>(null);
   const [sentToken, setSentToken] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(false);
+  const [deliveryStatus, setDeliveryStatus] = useState<{
+    attempted: boolean;
+    provider: string;
+    success: boolean;
+    to: string;
+    error?: string;
+    resendRestricted?: boolean;
+    allowedAccountEmail?: string;
+    message?: string;
+  } | null>(null);
 
   const validateEmail = (val: string): boolean => {
     const trimmed = val.trim().toLowerCase();
@@ -52,6 +63,9 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
       if (res.resetToken) {
         setSentToken(res.resetToken);
       }
+      if (res.delivery) {
+        setDeliveryStatus(res.delivery);
+      }
       setIsSubmitted(true);
     } catch (err: any) {
       setErrorMessage(err.message || 'Unable to submit password reset request. Please try again.');
@@ -68,12 +82,21 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
     }
   };
 
+  const handleCopyToken = () => {
+    if (sentToken) {
+      navigator.clipboard.writeText(sentToken);
+      setCopiedToken(true);
+      setTimeout(() => setCopiedToken(false), 2500);
+    }
+  };
+
   const handleResetAnother = () => {
     setEmail('');
     setIsSubmitted(false);
     setErrorMessage(null);
     setSentResetUrl(null);
     setSentToken(null);
+    setDeliveryStatus(null);
   };
 
   return (
@@ -177,7 +200,17 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
               </button>
             </form>
 
-            <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <div className="mt-6 pt-5 border-t border-slate-100 flex flex-col space-y-2.5 text-center">
+              {onNavigateToReset && (
+                <button
+                  type="button"
+                  onClick={() => onNavigateToReset('')}
+                  className="text-xs text-sky-600 hover:text-sky-800 font-bold inline-flex items-center justify-center space-x-1 cursor-pointer"
+                >
+                  <KeyRound className="w-3.5 h-3.5" />
+                  <span>Already have a security token? Reset password here</span>
+                </button>
+              )}
               <button
                 type="button"
                 onClick={onBackToLogin}
@@ -196,17 +229,102 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
 
             <div className="space-y-2">
               <h2 className="text-xl font-extrabold text-slate-900">
-                Check Your Email
+                Password Reset Initiated
               </h2>
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-slate-700 leading-relaxed text-left space-y-2">
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs text-slate-700 leading-relaxed text-left space-y-1.5">
                 <p className="font-semibold text-slate-900">
-                  If an account with this email address exists, you will receive a password reset link shortly.
+                  Password reset credentials for <strong className="text-slate-800">{email}</strong> have been generated.
                 </p>
                 <p className="text-[11px] text-slate-500">
-                  Password reset instructions for <strong className="text-slate-800">{email}</strong> have been generated and dispatched with a 30-minute validity period.
+                  Valid for 30 minutes for single-use verification.
                 </p>
               </div>
             </div>
+
+            {/* Resend Free Sandbox Warning or Delivery Status */}
+            {deliveryStatus?.resendRestricted && (
+              <div className="bg-amber-50/95 border border-amber-300 rounded-xl p-3.5 text-xs text-amber-900 text-left space-y-1.5">
+                <div className="flex items-center space-x-1.5 font-bold text-amber-900">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  <span>Resend Free Sandbox Restriction Notice</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-amber-800">
+                  Resend is currently operating in free sandbox testing mode. By Resend's security policy, testing emails can only be delivered to your verified developer address (<strong>{deliveryStatus.allowedAccountEmail || 'luthandodidiza197@gmail.com'}</strong>). Outbound mail to <strong>{email}</strong> was held by Resend.
+                </p>
+                <p className="text-[11px] text-amber-900 font-semibold pt-1 border-t border-amber-200/80">
+                  💡 <strong>No domain?</strong> You can configure <code>GMAIL_USER</code> and <code>GMAIL_APP_PASSWORD</code> in your environment settings to deliver real emails to any address via Gmail SMTP with zero domain verification required!
+                </p>
+                <p className="text-[11px] text-emerald-800 font-semibold">
+                  👉 You can still reset this user immediately using the direct link or security token below!
+                </p>
+              </div>
+            )}
+
+            {deliveryStatus?.success && (deliveryStatus?.provider === 'gmail_smtp' || deliveryStatus?.provider === 'smtp') && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-800 text-left flex items-start space-x-2.5">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div className="space-y-0.5">
+                  <div className="font-bold text-emerald-900">
+                    Real Email Dispatched via {deliveryStatus.provider === 'gmail_smtp' ? 'Gmail SMTP' : 'Custom SMTP'}
+                  </div>
+                  <div className="text-[11px] text-emerald-700">
+                    Delivered directly to <strong className="text-emerald-950 font-semibold">{deliveryStatus.to}</strong> without requiring any custom domain registration!
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {deliveryStatus && !deliveryStatus.success && (deliveryStatus.provider === 'gmail_smtp' || deliveryStatus.provider === 'smtp') && (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-rose-800 text-left space-y-1">
+                <div className="flex items-center space-x-1.5 font-bold text-rose-900">
+                  <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{deliveryStatus.provider === 'gmail_smtp' ? 'Gmail SMTP Dispatch Issue' : 'SMTP Dispatch Issue'}</span>
+                </div>
+                <p className="text-[11px] leading-relaxed text-rose-700">
+                  {deliveryStatus.message || deliveryStatus.error}
+                </p>
+              </div>
+            )}
+
+            {deliveryStatus?.success && deliveryStatus?.provider === 'resend' && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-xs text-emerald-800 text-left flex items-start space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold">Real Email Dispatched via Resend:</span> Outbound reset message sent to <strong className="text-emerald-950">{deliveryStatus.to}</strong>.
+                </div>
+              </div>
+            )}
+
+            {/* Direct Security Token Card */}
+            {sentToken && (
+              <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-left space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                    One-Time Security Token
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyToken}
+                    className="text-[11px] text-sky-600 hover:text-sky-800 font-bold inline-flex items-center space-x-1 cursor-pointer"
+                  >
+                    {copiedToken ? (
+                      <>
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        <span className="text-emerald-700">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3 h-3" />
+                        <span>Copy Token</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <div className="font-mono text-xs font-semibold text-slate-800 bg-white border border-slate-200 rounded-lg p-2 break-all select-all">
+                  {sentToken}
+                </div>
+              </div>
+            )}
 
             {/* Live Verification Link & Direct Testing Card */}
             {sentResetUrl && (
@@ -214,16 +332,12 @@ export const ForgotPasswordView: React.FC<ForgotPasswordViewProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2 text-xs font-bold text-sky-900">
                     <ShieldCheck className="w-4 h-4 text-sky-600" />
-                    <span>Generated Verification Link</span>
+                    <span>Public Password Reset Link</span>
                   </div>
                   <span className="text-[10px] bg-sky-200/70 text-sky-800 font-bold px-2 py-0.5 rounded-full">
-                    Ready to Use
+                    Active (30 mins)
                   </span>
                 </div>
-
-                <p className="text-xs text-slate-600">
-                  You can click below to open the verification and reset form immediately:
-                </p>
 
                 <div className="flex flex-col sm:flex-row gap-2">
                   {onNavigateToReset && sentToken ? (

@@ -1,3 +1,4 @@
+import nodemailer from 'nodemailer';
 import { db } from './db.js';
 import { RequestItem, ApprovalRequest, WorkflowRule } from '../src/types/index.js';
 
@@ -69,6 +70,9 @@ export function sendTicketConfirmationEmail(request: RequestItem) {
       </div>
     </div>
   `;
+
+  // Dispatch real outbound email asynchronously in background if provider is configured
+  dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml).catch(() => {});
 
   return db.addEmailNotification(
     request.id,
@@ -145,6 +149,9 @@ export function sendTicketStatusUpdateEmail(request: RequestItem, oldStatus: str
     </div>
   `;
 
+  // Dispatch real outbound email asynchronously in background if provider is configured
+  dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml).catch(() => {});
+
   return db.addEmailNotification(
     request.id,
     recipientEmail,
@@ -179,6 +186,9 @@ export function sendAIResponseDispatchEmail(request: RequestItem, responseText: 
       </div>
     </div>
   `;
+
+  // Dispatch real outbound email asynchronously in background if provider is configured
+  dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml).catch(() => {});
 
   return db.addEmailNotification(
     request.id,
@@ -390,47 +400,256 @@ export function sendWorkflowAlertEmail(recipientEmail: string, recipientName: st
   );
 }
 
-// Dispatch real outbound email if external provider API keys are present
-export async function dispatchRealEmailIfConfigured(to: string, subject: string, html: string) {
+// Cached nodemailer transporter instance
+let cachedTransporter: nodemailer.Transporter | null = null;
+let lastSmtpConfigKey = '';
+
+function getSmtpTransporter(): { transporter: nodemailer.Transporter; providerName: 'gmail_smtp' | 'smtp'; fromEmail: string } | null {
+  const gmailUser = (process.env.GMAIL_USER || '').trim();
+  const gmailPass = (process.env.GMAIL_APP_PASSWORD || '').trim();
+  const smtpUser = (process.env.SMTP_USER || '').trim();
+  const smtpPass = (process.env.SMTP_PASS || '').trim();
+  const smtpHost = (process.env.SMTP_HOST || '').trim();
+  const smtpPort = process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT, 10) : 587;
+
+  const user = gmailUser || smtpUser;
+  const pass = gmailPass || smtpPass;
+
+  if (!user || !pass) {
+    return null;
+  }
+
+  const configKey = `${user}:${pass.substring(0, 4)}:${smtpHost}:${smtpPort}`;
+  if (cachedTransporter && lastSmtpConfigKey === configKey) {
+    return {
+      transporter: cachedTransporter,
+      providerName: smtpHost ? 'smtp' : 'gmail_smtp',
+      fromEmail: user,
+    };
+  }
+
+  try {
+    if (smtpHost) {
+      cachedTransporter = nodemailer.createTransport({
+        host: smtpHost,
+        port: smtpPort,
+        secure: smtpPort === 465,
+        auth: { user, pass },
+      });
+    } else {
+      // Zero-Domain Gmail SMTP via official Google mail infrastructure
+      cachedTransporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: { user, pass },
+      });
+    }
+    lastSmtpConfigKey = configKey;
+    return {
+      transporter: cachedTransporter,
+      providerName: smtpHost ? 'smtp' : 'gmail_smtp',
+      fromEmail: user,
+    };
+  } catch (err) {
+    console.error('[Email Service] Failed to initialize SMTP transporter:', err);
+    return null;
+  }
+}
+
+// Delivery status interface for email dispatch
+export interface EmailDeliveryStatus {
+  attempted: boolean;
+  provider: 'gmail_smtp' | 'smtp' | 'resend' | 'sendgrid' | 'local_only';
+  success: boolean;
+  to: string;
+  error?: string;
+  resendRestricted?: boolean;
+  allowedAccountEmail?: string;
+  message?: string;
+  messageId?: string;
+}
+
+// Dispatch real outbound email if external provider API keys or Gmail SMTP are present
+export async function dispatchRealEmailIfConfigured(to: string, subject: string, html: string): Promise<EmailDeliveryStatus> {
+  const cleanTo = (to || '').trim().toLowerCase();
+
+  // 1. Prioritize Gmail / SMTP if configured (Requires NO custom domain registration!)
+  const smtpConfig = getSmtpTransporter();
+  if (smtpConfig) {
+    try {
+      const fromEmail = process.env.EMAIL_FROM || `Capaciti Service Hub <${smtpConfig.fromEmail}>`;
+      const info = await smtpConfig.transporter.sendMail({
+        from: fromEmail,
+        to: cleanTo,
+        subject,
+        html,
+      });
+
+      console.log(`[Email Service] ✅ Outbound email delivered via ${smtpConfig.providerName} to ${cleanTo}. Message ID: ${info.messageId}`);
+      return {
+        attempted: true,
+        provider: smtpConfig.providerName,
+        success: true,
+        to: cleanTo,
+        messageId: info.messageId,
+        message: `Successfully delivered outbound email to ${cleanTo} via ${smtpConfig.providerName === 'gmail_smtp' ? 'Gmail SMTP' : 'Custom SMTP'}.`,
+      };
+    } catch (err: any) {
+      console.error(`[Email Service] ❌ ${smtpConfig.providerName} dispatch failed:`, err);
+      const errString: string = err?.message || String(err);
+      
+      let friendlyMsg = `${smtpConfig.providerName === 'gmail_smtp' ? 'Gmail SMTP' : 'SMTP'} dispatch failed: ${errString}`;
+      if (
+        errString.includes('535') || 
+        errString.toLowerCase().includes('badcredentials') || 
+        errString.toLowerCase().includes('username and password not accepted')
+      ) {
+        friendlyMsg = 'Gmail SMTP Authentication Failed: Invalid Google App Password. Please generate a 16-character App Password at myaccount.google.com/apppasswords (ensure 2-Step Verification is enabled in your Google Account).';
+      }
+
+      // If no other secondary provider configured, return failure
+      if (!process.env.RESEND_API_KEY && !process.env.SENDGRID_API_KEY) {
+        return {
+          attempted: true,
+          provider: smtpConfig.providerName,
+          success: false,
+          to: cleanTo,
+          error: errString,
+          message: friendlyMsg,
+        };
+      }
+      console.warn(`[Email Service] Falling back to secondary mail providers after ${smtpConfig.providerName} error...`);
+    }
+  }
+
+  // 2. Resend API (requires verified custom domain at resend.com/domains)
   try {
     if (process.env.RESEND_API_KEY) {
-      await fetch('https://api.resend.com/emails', {
+      const fromAddress = process.env.EMAIL_FROM || 'Capaciti Service Hub <onboarding@resend.dev>';
+      const res = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          from: process.env.EMAIL_FROM || 'Capaciti Service Hub <onboarding@resend.dev>',
-          to: [to],
+          from: fromAddress,
+          to: [cleanTo],
           subject,
           html,
         }),
       });
-      console.log(`[Email] Dispatched email via Resend to ${to}`);
+
+      const responseText = await res.text();
+      let resJson: any = null;
+      try {
+        resJson = JSON.parse(responseText);
+      } catch {
+        resJson = { raw: responseText };
+      }
+
+      if (!res.ok) {
+        console.error(`[Email Service] Resend delivery rejected (HTTP ${res.status}):`, resJson);
+        const rawErrorMsg: string = resJson?.message || resJson?.error || `HTTP ${res.status}`;
+        
+        // Detect Resend free tier sandbox restriction:
+        // "You can only send testing emails to your own email address (luthandodidiza197@gmail.com). To send to other addresses, add and verify your domain at resend.com/domains"
+        const isSandboxRestricted =
+          rawErrorMsg.toLowerCase().includes('only send testing emails to your own email address') ||
+          (resJson?.name === 'validation_error' && rawErrorMsg.toLowerCase().includes('testing emails'));
+
+        let allowedEmail = 'luthandodidiza197@gmail.com';
+        const emailMatch = rawErrorMsg.match(/\(([^)]+@[^)]+)\)/);
+        if (emailMatch && emailMatch[1]) {
+          allowedEmail = emailMatch[1];
+        }
+
+        const friendlyMsg = isSandboxRestricted
+          ? `Resend Free Sandbox restriction: Resend only permits sending external test emails to ${allowedEmail} until a custom domain is verified in your Resend account dashboard (resend.com/domains).`
+          : `Resend dispatch failed: ${rawErrorMsg}`;
+
+        if (isSandboxRestricted) {
+          console.warn(`[Email Service] ⚠️ Resend Sandbox Policy: Email to <${cleanTo}> was blocked by Resend because the API key is restricted to sending to <${allowedEmail}> until a domain is verified.`);
+        }
+
+        return {
+          attempted: true,
+          provider: 'resend',
+          success: false,
+          to: cleanTo,
+          error: rawErrorMsg,
+          resendRestricted: isSandboxRestricted,
+          allowedAccountEmail: allowedEmail,
+          message: friendlyMsg,
+        };
+      }
+
+      console.log(`[Email Service] ✅ Dispatched email via Resend to ${cleanTo}. Message ID: ${resJson?.id || 'ok'}`);
+      return {
+        attempted: true,
+        provider: 'resend',
+        success: true,
+        to: cleanTo,
+        messageId: resJson?.id,
+        message: `Successfully delivered outbound email to ${cleanTo} via Resend.`,
+      };
     } else if (process.env.SENDGRID_API_KEY) {
-      await fetch('https://api.sendgrid.com/v3/mail/send', {
+      const res = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${process.env.SENDGRID_API_KEY}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          personalizations: [{ to: [{ email: to }] }],
+          personalizations: [{ to: [{ email: cleanTo }] }],
           from: { email: process.env.EMAIL_FROM || 'noreply@capaciti.org', name: 'Capaciti Service Hub' },
           subject,
           content: [{ type: 'text/html', value: html }],
         }),
       });
-      console.log(`[Email] Dispatched email via SendGrid to ${to}`);
+
+      if (!res.ok) {
+        const sendgridErr = await res.text();
+        console.error(`[Email Service] SendGrid error (${res.status}):`, sendgridErr);
+        return {
+          attempted: true,
+          provider: 'sendgrid',
+          success: false,
+          to: cleanTo,
+          error: `SendGrid error (${res.status}): ${sendgridErr}`,
+        };
+      }
+
+      console.log(`[Email Service] ✅ Dispatched email via SendGrid to ${cleanTo}`);
+      return {
+        attempted: true,
+        provider: 'sendgrid',
+        success: true,
+        to: cleanTo,
+        message: `Successfully delivered outbound email to ${cleanTo} via SendGrid.`,
+      };
     }
-  } catch (err) {
-    console.warn('[Email] External email dispatch skipped or error:', err);
+  } catch (err: any) {
+    console.warn('[Email Service] External email dispatch skipped or network failure:', err);
+    return {
+      attempted: true,
+      provider: 'resend',
+      success: false,
+      to: cleanTo,
+      error: err?.message || 'Network error contacting mail provider',
+    };
   }
+
+  return {
+    attempted: false,
+    provider: 'local_only',
+    success: true,
+    to: cleanTo,
+    message: 'Local notification saved (no external mail provider API key configured).',
+  };
 }
 
 // Password Reset Email
-export function sendPasswordResetEmail(recipientEmail: string, recipientName: string, resetToken: string, resetUrl: string) {
+export async function sendPasswordResetEmail(recipientEmail: string, recipientName: string, resetToken: string, resetUrl: string) {
   const subject = `🔒 Reset Your Capaciti Service Hub Password`;
 
   const bodyHtml = `
@@ -445,20 +664,32 @@ export function sendPasswordResetEmail(recipientEmail: string, recipientName: st
         <h3 style="margin-top: 0; color: #0f172a; font-size: 16px;">Hello ${recipientName || 'User'},</h3>
         <p style="margin-bottom: 16px;">We received a request to reset your password for your Capaciti Service Hub account (<strong>${recipientEmail}</strong>).</p>
         
-        <p style="margin-bottom: 24px;">To create a new password, click the secure button below:</p>
+        <p style="margin-bottom: 20px;">To create a new password, click the secure button below:</p>
         
-        <div style="text-align: center; margin: 28px 0;">
-          <a href="${resetUrl}" style="background-color: #0284c7; color: #ffffff; padding: 12px 28px; font-size: 14px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);">
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${resetUrl}" style="background-color: #0284c7; color: #ffffff; padding: 14px 32px; font-size: 14px; font-weight: 700; text-decoration: none; border-radius: 8px; display: inline-block; box-shadow: 0 2px 4px rgba(2, 132, 199, 0.25);">
             Reset Password
           </a>
+        </div>
+
+        <div style="background-color: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 16px; margin: 20px 0; text-align: center;">
+          <div style="font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #64748b; margin-bottom: 6px;">
+            Direct Security Token
+          </div>
+          <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 16px; font-weight: 700; color: #0284c7; letter-spacing: 1px; background: #ffffff; padding: 8px 16px; border-radius: 6px; display: inline-block; border: 1px solid #e2e8f0;">
+            ${resetToken}
+          </div>
+          <p style="margin: 8px 0 0; font-size: 11px; color: #64748b;">
+            You can also copy and paste this token directly into the app's Password Reset form.
+          </p>
         </div>
         
         <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #0284c7; padding: 14px 16px; border-radius: 6px; margin: 24px 0; font-size: 12px; color: #475569;">
           <p style="margin: 0 0 6px; font-weight: 700; color: #0f172a;">Important Security Notice:</p>
           <ul style="margin: 0; padding-left: 18px; line-height: 1.5;">
-            <li>This link is valid for <strong>30 minutes</strong> and will expire automatically.</li>
-            <li>This link is for <strong>one-time use only</strong> and becomes invalid once used.</li>
-            <li>If you did not request this password reset, you can safely ignore this email — your current password remains secure.</li>
+            <li>This link and code are valid for <strong>30 minutes</strong> and will expire automatically.</li>
+            <li>This token is for <strong>one-time use only</strong> and becomes invalid immediately once consumed.</li>
+            <li>If you did not request this password reset, you can safely ignore this email — your account remains protected.</li>
           </ul>
         </div>
 
@@ -478,9 +709,9 @@ export function sendPasswordResetEmail(recipientEmail: string, recipientName: st
   `;
 
   // Trigger external email dispatch if keys are configured in background
-  dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml);
+  const delivery = await dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml);
 
-  return db.addEmailNotification(
+  const notification = db.addEmailNotification(
     'AUTH-RESET',
     recipientEmail,
     recipientName || 'User',
@@ -488,10 +719,12 @@ export function sendPasswordResetEmail(recipientEmail: string, recipientName: st
     bodyHtml,
     'PASSWORD_RESET'
   );
+
+  return { notification, delivery };
 }
 
 // Password Reset Success Confirmation Email
-export function sendPasswordResetSuccessEmail(recipientEmail: string, recipientName: string) {
+export async function sendPasswordResetSuccessEmail(recipientEmail: string, recipientName: string) {
   const subject = `✅ Password Reset Successful — Capaciti Service Hub`;
 
   const bodyHtml = `
@@ -523,7 +756,9 @@ export function sendPasswordResetSuccessEmail(recipientEmail: string, recipientN
     </div>
   `;
 
-  return db.addEmailNotification(
+  const delivery = await dispatchRealEmailIfConfigured(recipientEmail, subject, bodyHtml);
+
+  const notification = db.addEmailNotification(
     'AUTH-SUCCESS',
     recipientEmail,
     recipientName || 'User',
@@ -531,4 +766,6 @@ export function sendPasswordResetSuccessEmail(recipientEmail: string, recipientN
     bodyHtml,
     'PASSWORD_RESET_SUCCESS'
   );
+
+  return { notification, delivery };
 }

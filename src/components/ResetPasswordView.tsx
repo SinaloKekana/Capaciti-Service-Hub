@@ -27,6 +27,21 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
   onBackToLogin,
   onRequestNewResetLink,
 }) => {
+  const [currentToken, setCurrentToken] = useState<string>(() => {
+    if (token && token.trim()) return token.trim();
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlToken = searchParams.get('resetToken') || searchParams.get('token');
+      if (urlToken && urlToken.trim()) return urlToken.trim();
+      
+      const hash = window.location.hash || '';
+      const hashMatch = hash.match(/token=([a-zA-Z0-9_-]+)/);
+      if (hashMatch && hashMatch[1]) return hashMatch[1].trim();
+    }
+    return '';
+  });
+
+  const [manualTokenInput, setManualTokenInput] = useState('');
   const [isVerifyingToken, setIsVerifyingToken] = useState(true);
   const [tokenStatus, setTokenStatus] = useState<{
     valid: boolean;
@@ -45,7 +60,14 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
   const [isSuccess, setIsSuccess] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Verify token on mount or token change
+  // Sync currentToken if prop changes
+  useEffect(() => {
+    if (token && token.trim() && token.trim() !== currentToken) {
+      setCurrentToken(token.trim());
+    }
+  }, [token]);
+
+  // Verify token on mount or currentToken change
   useEffect(() => {
     let isMounted = true;
     const checkToken = async () => {
@@ -53,12 +75,13 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
       setTokenStatus(null);
       setSubmitError(null);
 
-      if (!token || !token.trim()) {
+      const clean = currentToken.trim();
+      if (!clean) {
         if (isMounted) {
           setTokenStatus({
             valid: false,
-            reason: 'invalid',
-            error: 'This password reset link is invalid or has expired. Please request a new password reset link.',
+            reason: 'missing',
+            error: 'No password reset token was detected. Enter your token below or request a new reset link.',
           });
           setIsVerifyingToken(false);
         }
@@ -66,7 +89,7 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
       }
 
       try {
-        const result = await api.verifyResetToken(token.trim());
+        const result = await api.verifyResetToken(clean);
         if (isMounted) {
           setTokenStatus(result);
         }
@@ -89,7 +112,7 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [currentToken]);
 
   // Real-time password requirement validators
   const hasMin8 = newPassword.length >= 8;
@@ -132,7 +155,7 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
     setIsSubmitting(true);
 
     try {
-      await api.resetPassword(token.trim(), newPassword.trim());
+      await api.resetPassword(currentToken.trim(), newPassword.trim());
       setIsSuccess(true);
     } catch (err: any) {
       const msg = err.message || 'Unable to update password. Please try again.';
@@ -186,7 +209,35 @@ export const ResetPasswordView: React.FC<ResetPasswordViewProps> = ({
                 Invalid or Expired Link
               </h2>
               <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-4 text-xs text-rose-800 leading-relaxed font-medium">
-                This password reset link is invalid or has expired. Please request a new password reset link.
+                {tokenStatus?.error || 'This password reset link is invalid or has expired. Please request a new password reset link.'}
+              </div>
+            </div>
+
+            {/* Manual Token Entry Fallback */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-left space-y-2">
+              <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-700">
+                <KeyRound className="w-3.5 h-3.5 text-sky-600" />
+                <span>Have a reset token? Enter it manually:</span>
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={manualTokenInput}
+                  onChange={(e) => setManualTokenInput(e.target.value)}
+                  placeholder="Paste token here..."
+                  className="flex-1 px-3 py-2 bg-white border border-slate-300 rounded-lg text-xs font-mono focus:outline-hidden focus:ring-2 focus:ring-sky-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (manualTokenInput.trim()) {
+                      setCurrentToken(manualTokenInput.trim());
+                    }
+                  }}
+                  className="px-3.5 py-2 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Verify
+                </button>
               </div>
             </div>
 

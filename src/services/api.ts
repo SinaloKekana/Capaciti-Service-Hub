@@ -99,7 +99,24 @@ export const api = {
     return data;
   },
 
-  forgotPassword: async (email: string): Promise<{ success: boolean; message: string; resetUrl?: string; resetToken?: string; email?: string }> => {
+  forgotPassword: async (email: string): Promise<{ 
+    success: boolean; 
+    message: string; 
+    resetUrl?: string; 
+    resetToken?: string; 
+    email?: string;
+    delivery?: {
+      attempted: boolean;
+      provider: string;
+      success: boolean;
+      to: string;
+      error?: string;
+      resendRestricted?: boolean;
+      allowedAccountEmail?: string;
+      message?: string;
+      messageId?: string;
+    };
+  }> => {
     return apiFetch('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email }),
