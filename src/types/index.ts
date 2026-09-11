@@ -268,6 +268,9 @@ export interface DashboardStats {
   avgResolutionHours: number;
   avgFirstResponseFormatted?: string;
   slaBreachedCount?: number;
+  withinSLACount?: number;
+  atRiskCount?: number;
+  criticalRequests?: number;
   assignedToMeCount?: number;
   unassignedQueueCount?: number;
   slaComplianceRate: number;

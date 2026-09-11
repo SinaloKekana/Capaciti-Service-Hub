@@ -82,14 +82,14 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ stats, u
   };
 
   // Metric Values calculated or mapped to exact format
-  const totalTickets = stats.totalRequests || 8;
-  const inProgressTickets = stats.inProgressRequests || 0;
-  const criticalOpen = stats.criticalRequests || 0;
-  const slaBreached = stats.slaBreachedCount || 5;
-  const assignedToMe = stats.assignedToMeCount || 0;
+  const totalTickets = stats.totalRequests || 15;
+  const inProgressTickets = stats.inProgressRequests || 7;
+  const criticalOpen = stats.criticalRequests !== undefined ? stats.criticalRequests : 3;
+  const slaBreached = stats.slaBreachedCount !== undefined ? stats.slaBreachedCount : 2;
+  const assignedToMe = stats.assignedToMeCount || 4;
   const unassignedQueue = stats.unassignedQueueCount || 0;
   const avgFirstResponse = stats.avgFirstResponseFormatted || '22m';
-  const slaCompliance = stats.slaComplianceRate || 33;
+  const slaCompliance = stats.slaComplianceRate || 87;
   const avgResolution = stats.avgResolutionHours
     ? `${Math.floor(stats.avgResolutionHours)}h ${Math.round((stats.avgResolutionHours % 1) * 60)}m`
     : '2h 48m';
@@ -112,90 +112,112 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ stats, u
 
   // SLA Health Donut Data (Screenshot 1)
   const slaHealthData = [
-    { name: 'On Track', value: 2, color: '#2563eb' },
-    { name: 'Approaching', value: 1, color: '#10b981' },
+    { name: 'On Track', value: stats.withinSLACount ?? 11, color: '#2563eb' },
+    { name: 'Approaching', value: stats.atRiskCount ?? 2, color: '#10b981' },
     { name: 'Critical', value: 0, color: '#f59e0b' },
-    { name: 'Breached', value: 5, color: '#c2410c' },
+    { name: 'Breached', value: slaBreached, color: '#c2410c' },
   ];
 
   // By Status Bar Data (Screenshot 2)
   const statusChartData = [
-    { name: 'Resolved', count: 3, color: '#2563eb' },
-    { name: 'New', count: 2, color: '#10b981' },
-    { name: 'Cancelled', count: 2, color: '#d97706' },
-    { name: 'Assigned', count: 1, color: '#dc2626' },
+    { name: 'Resolved', count: stats.resolvedRequests ?? 8, color: '#2563eb' },
+    { name: 'In Progress', count: stats.inProgressRequests ?? 7, color: '#10b981' },
+    { name: 'New', count: stats.openRequests ?? 0, color: '#d97706' },
+    { name: 'Under Review', count: 0, color: '#dc2626' },
   ];
 
   // By Priority Donut Data (Screenshot 2)
   const priorityChartData = [
     { name: 'Low', value: 2, color: '#2563eb' },
-    { name: 'Medium', value: 4, color: '#059669' },
-    { name: 'High', value: 2, color: '#d97706' },
+    { name: 'Medium', value: 5, color: '#059669' },
+    { name: 'High', value: 4, color: '#d97706' },
+    { name: 'Urgent', value: 4, color: '#dc2626' },
   ];
 
   // By Category Horizontal Bar Data (Screenshot 2)
   const categoryChartData = [
-    { name: 'Hardware', count: 3, color: '#2563eb' },
+    { name: 'Hardware', count: 4, color: '#2563eb' },
     { name: 'Network', count: 4, color: '#059669' },
-    { name: 'Access & Accounts', count: 1, color: '#d97706' },
+    { name: 'Access & Accounts', count: 3, color: '#d97706' },
+    { name: 'IT Support', count: 2, color: '#0284c7' },
+    { name: 'Human Resources', count: 1, color: '#10b981' },
+    { name: 'Finance', count: 1, color: '#6366f1' },
   ];
 
-  // Live SLA Countdowns Table Data (Screenshot 2)
+  // Live SLA Countdowns Table Data (Fallback)
   const liveSLACountdowns = [
     {
-      id: 'A20260813_0002',
-      title: 'Wi-Fi Connection Failure',
-      priority: 'Medium',
+      id: 'REQ-2026-0821-4001',
+      title: 'CRITICAL: LMS Assessment Portal 504 Gateway Timeout',
+      priority: 'Urgent',
       owner: 'Luthando Didiza',
-      remainingText: '-143:51:29 Breached',
-      isBreached: true,
+      remainingText: '01:15:00 remaining',
+      isBreached: false,
     },
     {
-      id: 'A20260814_0003',
-      title: 'PC Bluetooth is Not Reachable',
-      priority: 'Medium',
-      owner: 'Luthando Didiza',
-      remainingText: '-120:56:47 Breached',
-      isBreached: true,
+      id: 'REQ-2026-0821-5002',
+      title: 'Azure AD Conditional Access Policy Lockout on PowerBI Gateway',
+      priority: 'Urgent',
+      owner: 'Anathi Dlamini',
+      remainingText: '00:22:00 remaining (At Risk)',
+      isBreached: false,
     },
     {
-      id: 'A20260817_0001',
-      title: 'PC Wi-Fi Connection Issue',
-      priority: 'Medium',
-      owner: 'Luthando Didiza',
-      remainingText: '-41:48:06 Breached',
+      id: 'REQ-2026-0818-2001',
+      title: 'Cape Town Campus Core Cisco Switch Power Supply Failure',
+      priority: 'Urgent',
+      owner: 'Tebogo Molefe',
+      remainingText: 'Resolved (+25.5h Breached - Courier Part Delay)',
       isBreached: true,
     },
   ];
 
-  // Technician Workload Table Data (Screenshot 2)
+  // Technician Workload Table Data (Total Breached = 2 across all technicians)
   const technicianWorkload = [
     {
       name: 'Luthando Didiza',
-      open: 3,
-      inProgress: 0,
-      critical: 0,
+      open: 2,
+      inProgress: 2,
+      critical: 1,
       atRisk: 0,
-      breached: 3,
-      avgResolution: '72h 10m',
+      breached: 0,
+      avgResolution: '1h 45m',
     },
     {
-      name: 'Masbee MDK',
-      open: 0,
-      inProgress: 0,
+      name: 'Tebogo Molefe',
+      open: 1,
+      inProgress: 1,
       critical: 0,
       atRisk: 0,
-      breached: 2,
-      avgResolution: '48h 30m',
+      breached: 1,
+      avgResolution: '4h 15m',
     },
     {
-      name: 'Sinalo Kekana',
-      open: 0,
-      inProgress: 0,
+      name: 'Farai Moyo',
+      open: 1,
+      inProgress: 1,
+      critical: 0,
+      atRisk: 0,
+      breached: 1,
+      avgResolution: '3h 30m',
+    },
+    {
+      name: 'Anathi Dlamini',
+      open: 2,
+      inProgress: 2,
+      critical: 1,
+      atRisk: 1,
+      breached: 0,
+      avgResolution: '1h 20m',
+    },
+    {
+      name: 'Zandile Nkosi',
+      open: 1,
+      inProgress: 1,
       critical: 0,
       atRisk: 0,
       breached: 0,
-      avgResolution: '24h 00m',
+      avgResolution: '2h 10m',
     },
   ];
 

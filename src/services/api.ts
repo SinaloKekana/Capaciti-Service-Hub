@@ -117,9 +117,10 @@ export const api = {
       messageId?: string;
     };
   }> => {
+    const appBaseUrl = typeof window !== 'undefined' ? window.location.origin : undefined;
     return apiFetch('/api/auth/forgot-password', {
       method: 'POST',
-      body: JSON.stringify({ email }),
+      body: JSON.stringify({ email, appBaseUrl }),
     });
   },
 

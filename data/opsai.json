@@ -642,9 +642,9 @@
       "requestType": "Service Request",
       "priority": "Medium",
       "department": "Operations",
-      "status": "In Progress",
+      "status": "Resolved",
       "slaTargetHours": 24,
-      "slaStatus": "Breached",
+      "slaStatus": "Within SLA",
       "assignedToUserId": "user-tech-tebogo",
       "assignedToName": "Tebogo Molefe",
       "assignedTechnicianName": "Tebogo Molefe",
@@ -665,7 +665,10 @@
       },
       "internalNotes": [
         "[2026-08-20 16:00] Tebogo Molefe: Warehouse out of stock, requisition sent to procurement."
-      ]
+      ],
+      "resolvedAt": "2026-08-19T14:30:00.000Z",
+      "resolutionDurationHours": 6.5,
+      "resolutionNotes": "Replaced hydraulic mount with heavy-duty VESA dual arm from regional store. Position calibrated and verified for data lab workstation."
     },
     {
       "id": "REQ-2026-0821-3001",
@@ -685,8 +688,8 @@
       "assignedToName": "Zandile Nkosi",
       "assignedTechnicianName": "Zandile Nkosi",
       "category": "Network & Cloud",
-      "createdAt": "2026-08-21T01:30:00.000Z",
-      "updatedAt": "2026-08-21T02:45:00.000Z",
+      "createdAt": "2026-09-11T05:09:55.322Z",
+      "updatedAt": "2026-09-11T06:09:55.322Z",
       "aiClassification": {
         "id": "ai-seed-7",
         "requestId": "REQ-2026-0821-3001",
@@ -721,8 +724,8 @@
       "assignedToName": "Luthando Didiza",
       "assignedTechnicianName": "Luthando Didiza",
       "category": "Software & SaaS",
-      "createdAt": "2026-08-21T00:15:00.000Z",
-      "updatedAt": "2026-08-21T02:00:00.000Z",
+      "createdAt": "2026-09-11T01:09:55.322Z",
+      "updatedAt": "2026-09-11T04:09:55.322Z",
       "aiClassification": {
         "id": "ai-seed-8",
         "requestId": "REQ-2026-0821-3002",
@@ -754,8 +757,8 @@
       "assignedToName": "Farai Moyo",
       "assignedTechnicianName": "Farai Moyo",
       "category": "Software & SaaS",
-      "createdAt": "2026-08-21T02:00:00.000Z",
-      "updatedAt": "2026-08-21T03:10:00.000Z",
+      "createdAt": "2026-09-11T05:09:55.322Z",
+      "updatedAt": "2026-09-11T06:09:55.322Z",
       "aiClassification": {
         "id": "ai-seed-9",
         "requestId": "REQ-2026-0821-3003",
@@ -782,13 +785,13 @@
       "department": "IT",
       "status": "In Progress",
       "slaTargetHours": 2,
-      "slaStatus": "At Risk",
+      "slaStatus": "Within SLA",
       "assignedToUserId": "user-tech-zandile",
       "assignedToName": "Zandile Nkosi",
       "assignedTechnicianName": "Zandile Nkosi",
       "category": "Network & Cloud",
-      "createdAt": "2026-08-21T02:15:00.000Z",
-      "updatedAt": "2026-08-21T03:30:00.000Z",
+      "createdAt": "2026-09-11T06:39:55.322Z",
+      "updatedAt": "2026-09-11T06:54:55.322Z",
       "aiClassification": {
         "id": "ai-seed-10",
         "requestId": "REQ-2026-0821-4001",
@@ -823,8 +826,8 @@
       "assignedToName": "Tebogo Molefe",
       "assignedTechnicianName": "Tebogo Molefe",
       "category": "Facilities & Ops",
-      "createdAt": "2026-08-21T03:00:00.000Z",
-      "updatedAt": "2026-08-21T03:35:00.000Z",
+      "createdAt": "2026-09-11T06:39:55.322Z",
+      "updatedAt": "2026-09-11T06:54:55.322Z",
       "aiClassification": {
         "id": "ai-seed-11",
         "requestId": "REQ-2026-0821-4002",
@@ -859,8 +862,8 @@
       "assignedToName": "Tebogo Molefe",
       "assignedTechnicianName": "Tebogo Molefe",
       "category": "Hardware & Assets",
-      "createdAt": "2026-08-20T21:15:00.000Z",
-      "updatedAt": "2026-08-21T03:20:00.000Z",
+      "createdAt": "2026-09-11T00:36:19.322Z",
+      "updatedAt": "2026-09-11T03:53:07.322Z",
       "aiClassification": {
         "id": "ai-seed-12",
         "requestId": "REQ-2026-0820-5001",
@@ -895,8 +898,8 @@
       "assignedToName": "Anathi Dlamini",
       "assignedTechnicianName": "Anathi Dlamini",
       "category": "Account Access",
-      "createdAt": "2026-08-21T02:05:00.000Z",
-      "updatedAt": "2026-08-21T03:30:00.000Z",
+      "createdAt": "2026-09-11T05:31:31.322Z",
+      "updatedAt": "2026-09-11T06:20:43.322Z",
       "aiClassification": {
         "id": "ai-seed-13",
         "requestId": "REQ-2026-0821-5002",
@@ -1167,6 +1170,26 @@
   ],
   "auditLogs": [
     {
+      "id": "audit-1789109336111-978",
+      "actorUserId": "user-global-admin",
+      "actorEmail": "admin@capaciti.org",
+      "action": "LOGIN",
+      "targetType": "USER",
+      "targetId": "user-global-admin",
+      "details": "User logged in successfully",
+      "timestamp": "2026-09-11T06:48:56.111Z"
+    },
+    {
+      "id": "audit-1789109336105-695",
+      "actorUserId": "user-global-admin",
+      "actorEmail": "admin@capaciti.org",
+      "action": "LOGIN",
+      "targetType": "USER",
+      "targetId": "user-global-admin",
+      "details": "User logged in successfully",
+      "timestamp": "2026-09-11T06:48:56.105Z"
+    },
+    {
       "id": "audit-1788427283490-231",
       "actorUserId": "user-tech-luthando-alias",
       "actorEmail": "luthandodidiza197@gmail.com",
@@ -1260,7 +1283,7 @@
       "type": "PASSWORD_RESET",
       "sentAt": "2026-09-03T09:21:23.489Z",
       "deliveryStatus": "delivered",
-      "isRead": false
+      "isRead": true
     },
     {
       "id": "email-1788427228293-711",

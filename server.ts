@@ -182,14 +182,21 @@ async function startServer() {
     if (process.env.APP_BASE_URL) {
       return process.env.APP_BASE_URL.replace(/\/+$/, '');
     }
-    const forwardedHost = (req.headers['x-forwarded-host'] as string) || req.get('host') || 'localhost:3000';
-    let host = forwardedHost.split(',')[0].trim();
-    // AI Studio Cloud Run development containers (ais-dev-*.run.app) enforce Google IAM cookie checks (__cookie_check.html)
-    // which fail with 403 when clicked from external email apps or mobile devices.
-    // Converting to the public shared preview URL (ais-pre-*.run.app) guarantees anyone clicking the link lands directly on the app!
-    if (host.includes('ais-dev-')) {
-      host = host.replace('ais-dev-', 'ais-pre-');
+    const reqBodyOrigin = req.body?.appBaseUrl || req.body?.origin;
+    if (reqBodyOrigin && typeof reqBodyOrigin === 'string' && reqBodyOrigin.startsWith('http')) {
+      return reqBodyOrigin.replace(/\/+$/, '');
     }
+    const originHeader = (req.headers.origin as string) || (req.headers.referer as string);
+    if (originHeader && originHeader.startsWith('http')) {
+      try {
+        const parsed = new URL(originHeader);
+        return `${parsed.protocol}//${parsed.host}`;
+      } catch {
+        // ignore parse error
+      }
+    }
+    const forwardedHost = (req.headers['x-forwarded-host'] as string) || req.get('host') || 'localhost:3000';
+    const host = forwardedHost.split(',')[0].trim();
     const forwardedProto = (req.headers['x-forwarded-proto'] as string) || req.protocol || 'https';
     const proto = forwardedProto.split(',')[0].trim();
     return `${proto}://${host}`;
@@ -683,7 +690,10 @@ async function startServer() {
 
     // SLA compliance calculation
     const withinSLACount = requests.filter((r) => r.slaStatus === 'Within SLA').length;
-    const slaComplianceRate = totalRequests > 0 ? Math.round((withinSLACount / totalRequests) * 100) : 98;
+    const breachedCount = requests.filter((r) => r.slaStatus === 'Breached').length;
+    const atRiskCount = requests.filter((r) => r.slaStatus === 'At Risk').length;
+    const criticalRequests = requests.filter((r) => (r.status !== 'Resolved' && r.status !== 'Closed') && (r.priority === 'Urgent' || r.priority === 'High')).length;
+    const slaComplianceRate = totalRequests > 0 ? Math.round(((totalRequests - breachedCount) / totalRequests) * 100) : 87;
     const firstContactResolutionRate = 78;
 
     // Category breakdown
@@ -744,6 +754,10 @@ async function startServer() {
         inProgressRequests,
         resolvedRequests,
         aiClassifiedRequests,
+        criticalRequests,
+        slaBreachedCount: breachedCount,
+        withinSLACount,
+        atRiskCount,
         avgResolutionHours: 2.8,
         avgFirstResponseFormatted: '22m',
         slaComplianceRate,
