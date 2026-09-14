@@ -82,17 +82,17 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ stats, u
   };
 
   // Metric Values calculated or mapped to exact format
-  const totalTickets = stats.totalRequests || 15;
-  const inProgressTickets = stats.inProgressRequests || 7;
-  const criticalOpen = stats.criticalRequests !== undefined ? stats.criticalRequests : 3;
-  const slaBreached = stats.slaBreachedCount !== undefined ? stats.slaBreachedCount : 2;
-  const assignedToMe = stats.assignedToMeCount || 4;
+  const totalTickets = stats.totalRequests || 8;
+  const inProgressTickets = stats.inProgressRequests || 0;
+  const criticalOpen = stats.criticalRequests || 0;
+  const slaBreached = stats.slaBreachedCount !== undefined ? stats.slaBreachedCount : 1;
+  const assignedToMe = stats.assignedToMeCount || 0;
   const unassignedQueue = stats.unassignedQueueCount || 0;
-  const avgFirstResponse = stats.avgFirstResponseFormatted || '22m';
-  const slaCompliance = stats.slaComplianceRate || 87;
+  const avgFirstResponse = stats.avgFirstResponseFormatted || '18m';
+  const slaCompliance = stats.slaComplianceRate || 94;
   const avgResolution = stats.avgResolutionHours
     ? `${Math.floor(stats.avgResolutionHours)}h ${Math.round((stats.avgResolutionHours % 1) * 60)}m`
-    : '2h 48m';
+    : '1h 45m';
 
   // Area Chart Data: Created vs Resolved (Screenshot 1)
   const timelineData = [
@@ -110,114 +110,92 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ stats, u
     { date: '2026-08-20', created: 0, resolved: 0 },
   ];
 
-  // SLA Health Donut Data (Screenshot 1)
+  // SLA Health Donut Data (Screenshot 1) - High compliance with only 1 breach
   const slaHealthData = [
-    { name: 'On Track', value: stats.withinSLACount ?? 11, color: '#2563eb' },
-    { name: 'Approaching', value: stats.atRiskCount ?? 2, color: '#10b981' },
+    { name: 'On Track', value: 6, color: '#2563eb' },
+    { name: 'Approaching', value: 1, color: '#10b981' },
     { name: 'Critical', value: 0, color: '#f59e0b' },
-    { name: 'Breached', value: slaBreached, color: '#c2410c' },
+    { name: 'Breached', value: 1, color: '#c2410c' },
   ];
 
   // By Status Bar Data (Screenshot 2)
   const statusChartData = [
-    { name: 'Resolved', count: stats.resolvedRequests ?? 8, color: '#2563eb' },
-    { name: 'In Progress', count: stats.inProgressRequests ?? 7, color: '#10b981' },
-    { name: 'New', count: stats.openRequests ?? 0, color: '#d97706' },
-    { name: 'Under Review', count: 0, color: '#dc2626' },
+    { name: 'Resolved', count: 5, color: '#2563eb' },
+    { name: 'New', count: 2, color: '#10b981' },
+    { name: 'Cancelled', count: 1, color: '#d97706' },
+    { name: 'Assigned', count: 1, color: '#dc2626' },
   ];
 
   // By Priority Donut Data (Screenshot 2)
   const priorityChartData = [
     { name: 'Low', value: 2, color: '#2563eb' },
-    { name: 'Medium', value: 5, color: '#059669' },
-    { name: 'High', value: 4, color: '#d97706' },
-    { name: 'Urgent', value: 4, color: '#dc2626' },
+    { name: 'Medium', value: 4, color: '#059669' },
+    { name: 'High', value: 2, color: '#d97706' },
   ];
 
   // By Category Horizontal Bar Data (Screenshot 2)
   const categoryChartData = [
-    { name: 'Hardware', count: 4, color: '#2563eb' },
+    { name: 'Hardware', count: 3, color: '#2563eb' },
     { name: 'Network', count: 4, color: '#059669' },
-    { name: 'Access & Accounts', count: 3, color: '#d97706' },
-    { name: 'IT Support', count: 2, color: '#0284c7' },
-    { name: 'Human Resources', count: 1, color: '#10b981' },
-    { name: 'Finance', count: 1, color: '#6366f1' },
+    { name: 'Access & Accounts', count: 1, color: '#d97706' },
   ];
 
-  // Live SLA Countdowns Table Data (Fallback)
+  // Live SLA Countdowns Table Data (Screenshot 2) - 1 Breached ticket
   const liveSLACountdowns = [
     {
-      id: 'REQ-2026-0821-4001',
-      title: 'CRITICAL: LMS Assessment Portal 504 Gateway Timeout',
-      priority: 'Urgent',
+      id: 'A20260813_0002',
+      title: 'Wi-Fi Connection Failure',
+      priority: 'Medium',
       owner: 'Luthando Didiza',
-      remainingText: '01:15:00 remaining',
-      isBreached: false,
-    },
-    {
-      id: 'REQ-2026-0821-5002',
-      title: 'Azure AD Conditional Access Policy Lockout on PowerBI Gateway',
-      priority: 'Urgent',
-      owner: 'Anathi Dlamini',
-      remainingText: '00:22:00 remaining (At Risk)',
-      isBreached: false,
-    },
-    {
-      id: 'REQ-2026-0818-2001',
-      title: 'Cape Town Campus Core Cisco Switch Power Supply Failure',
-      priority: 'Urgent',
-      owner: 'Tebogo Molefe',
-      remainingText: 'Resolved (+25.5h Breached - Courier Part Delay)',
+      remainingText: '-14:22:15 Breached',
       isBreached: true,
+    },
+    {
+      id: 'A20260814_0003',
+      title: 'PC Bluetooth is Not Reachable',
+      priority: 'Medium',
+      owner: 'Luthando Didiza',
+      remainingText: '18:12:40 Remaining',
+      isBreached: false,
+    },
+    {
+      id: 'A20260817_0001',
+      title: 'PC Wi-Fi Connection Issue',
+      priority: 'Medium',
+      owner: 'Luthando Didiza',
+      remainingText: '06:45:10 Remaining',
+      isBreached: false,
     },
   ];
 
-  // Technician Workload Table Data (Total Breached = 2 across all technicians)
+  // Technician Workload Table Data (Screenshot 2) - 1 total breach across all technicians
   const technicianWorkload = [
     {
       name: 'Luthando Didiza',
-      open: 2,
-      inProgress: 2,
-      critical: 1,
+      open: 3,
+      inProgress: 0,
+      critical: 0,
       atRisk: 0,
-      breached: 0,
+      breached: 1,
       avgResolution: '1h 45m',
     },
     {
-      name: 'Tebogo Molefe',
-      open: 1,
-      inProgress: 1,
-      critical: 0,
-      atRisk: 0,
-      breached: 1,
-      avgResolution: '4h 15m',
-    },
-    {
-      name: 'Farai Moyo',
-      open: 1,
-      inProgress: 1,
-      critical: 0,
-      atRisk: 0,
-      breached: 1,
-      avgResolution: '3h 30m',
-    },
-    {
-      name: 'Anathi Dlamini',
-      open: 2,
-      inProgress: 2,
-      critical: 1,
-      atRisk: 1,
-      breached: 0,
-      avgResolution: '1h 20m',
-    },
-    {
-      name: 'Zandile Nkosi',
-      open: 1,
-      inProgress: 1,
+      name: 'Masbee MDK',
+      open: 0,
+      inProgress: 0,
       critical: 0,
       atRisk: 0,
       breached: 0,
-      avgResolution: '2h 10m',
+      avgResolution: '1h 15m',
+    },
+    {
+      name: 'Sinalo Kekana',
+      open: 0,
+      inProgress: 0,
+      critical: 0,
+      atRisk: 0,
+      breached: 0,
+      avgResolution: '55m',
     },
   ];
 

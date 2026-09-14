@@ -73,44 +73,21 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onGetStarted, onTryDem
             Ticket management platform powered by intelligent classification, real-time SLA telemetry, and role-based workflows.
           </p>
 
-          {/* Quick Demo Logins Grid */}
-          <div className="pt-4 max-w-xl mx-auto">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Explore Demo Accounts
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <button
-                onClick={() => onTryDemo && onTryDemo('admin@capaciti.org', 'ADMIN')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-slate-900">Global Admin</div>
-                <div className="text-[10px] text-slate-500">admin@capaciti.org</div>
-              </button>
-
-              <button
-                onClick={() => onTryDemo && onTryDemo('manager@capaciti.org', 'SUPERVISOR')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-slate-900">Manager</div>
-                <div className="text-[10px] text-slate-500">Naledi Khumalo</div>
-              </button>
-
-              <button
-                onClick={() => onTryDemo && onTryDemo('tech.luthando@capaciti.org', 'TECHNICIAN')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-slate-900">Technician</div>
-                <div className="text-[10px] text-slate-500">Luthando Didiza</div>
-              </button>
-
-              <button
-                onClick={() => onTryDemo && onTryDemo('mbalientlempendu02@gmail.com', 'CUSTOMER')}
-                className="p-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-center transition-colors cursor-pointer"
-              >
-                <div className="font-bold text-slate-900">End User</div>
-                <div className="text-[10px] text-slate-500">Mbali Entle</div>
-              </button>
-            </div>
+          {/* Action CTAs */}
+          <div className="pt-3 flex flex-wrap items-center justify-center gap-3">
+            <button
+              onClick={() => onGetStarted('login')}
+              className="px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-white bg-[#0284c7] hover:bg-[#0369a1] transition-all cursor-pointer shadow-sm flex items-center space-x-2"
+            >
+              <span>Sign In to Portal</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onGetStarted('register')}
+              className="px-5 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-700 hover:text-slate-900 bg-white border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+            >
+              <span>Create Account</span>
+            </button>
           </div>
         </div>
       </section>
